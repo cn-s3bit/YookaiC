@@ -17,6 +17,12 @@
       <UniqueIdentifier>{58772361-14cc-467c-805f-c4703f604703}</UniqueIdentifier>
       <Extensions>lib;dll</Extensions>
     </Filter>
+    <Filter Include="源文件\Game">
+      <UniqueIdentifier>{0157f0a8-5065-4e76-b53f-16d84b705df9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Game\SDLEx">
+      <UniqueIdentifier>{338cc6aa-92a5-4269-a70c-7dc096145e7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VCSDL\include\begin_code.h">
@@ -268,22 +274,50 @@
     <ClInclude Include="VCSDL\include\SDL_vulkan.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="VCSDL\include\SDL_image.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VCSDL\include\SDL_ttf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\ImageUtils.h">
+      <Filter>源文件\Game\SDLEx</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\SDLWithPlugins.h">
+      <Filter>源文件\Game\SDLEx</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Constants.h">
+      <Filter>源文件\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\RenderUtils.h">
+      <Filter>源文件\Game\SDLEx</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\MathUtils.h">
+      <Filter>源文件\Game\SDLEx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Game</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="VCSDL\lib\win32\SDL2.dll">
-      <Filter>Imported Libraries</Filter>
-    </None>
+    <ClCompile Include="Game\SDLEx\ImageUtils.c">
+      <Filter>源文件\Game\SDLEx</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\RenderUtils.c">
+      <Filter>源文件\Game\SDLEx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="VCSDL\lib\win32\SDL2.lib">
       <Filter>Imported Libraries</Filter>
     </Library>
     <Library Include="VCSDL\lib\win32\SDL2main.lib">
+      <Filter>Imported Libraries</Filter>
+    </Library>
+    <Library Include="VCSDL\lib\win32\SDL2_image.lib">
+      <Filter>Imported Libraries</Filter>
+    </Library>
+    <Library Include="VCSDL\lib\win32\SDL2_ttf.lib">
       <Filter>Imported Libraries</Filter>
     </Library>
   </ItemGroup>

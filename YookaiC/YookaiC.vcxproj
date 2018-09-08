@@ -89,7 +89,7 @@
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>H:\PRGM\YookaiC\YookaiC\VCSDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -143,6 +143,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Game\Constants.h" />
+    <ClInclude Include="Game\SDLEx\ImageUtils.h" />
+    <ClInclude Include="Game\SDLEx\MathUtils.h" />
+    <ClInclude Include="Game\SDLEx\RenderUtils.h" />
+    <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />
     <ClInclude Include="VCSDL\include\begin_code.h" />
     <ClInclude Include="VCSDL\include\close_code.h" />
     <ClInclude Include="VCSDL\include\SDL.h" />
@@ -173,6 +178,7 @@
     <ClInclude Include="VCSDL\include\SDL_gesture.h" />
     <ClInclude Include="VCSDL\include\SDL_haptic.h" />
     <ClInclude Include="VCSDL\include\SDL_hints.h" />
+    <ClInclude Include="VCSDL\include\SDL_image.h" />
     <ClInclude Include="VCSDL\include\SDL_joystick.h" />
     <ClInclude Include="VCSDL\include\SDL_keyboard.h" />
     <ClInclude Include="VCSDL\include\SDL_keycode.h" />
@@ -222,6 +228,7 @@
     <ClInclude Include="VCSDL\include\SDL_thread.h" />
     <ClInclude Include="VCSDL\include\SDL_timer.h" />
     <ClInclude Include="VCSDL\include\SDL_touch.h" />
+    <ClInclude Include="VCSDL\include\SDL_ttf.h" />
     <ClInclude Include="VCSDL\include\SDL_types.h" />
     <ClInclude Include="VCSDL\include\SDL_version.h" />
     <ClInclude Include="VCSDL\include\SDL_video.h" />
@@ -229,15 +236,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="VCSDL\lib\win32\SDL2.dll">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
+    <ClCompile Include="Game\SDLEx\ImageUtils.c" />
+    <ClCompile Include="Game\SDLEx\RenderUtils.c" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="VCSDL\lib\win32\SDL2.lib" />
     <Library Include="VCSDL\lib\win32\SDL2main.lib" />
+    <Library Include="VCSDL\lib\win32\SDL2_image.lib" />
+    <Library Include="VCSDL\lib\win32\SDL2_ttf.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
