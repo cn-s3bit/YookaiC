@@ -41,6 +41,7 @@ int main(int argc, char ** argv) {
 	while (1) {
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
+		SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);
 		draw_texture(renderer, testTexture, new_sdl_point(250, 50));
 		draw_string(renderer, testFont, "新月村Test\n换行测试", new_sdl_point(100, 100));
