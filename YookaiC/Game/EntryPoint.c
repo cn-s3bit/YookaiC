@@ -33,12 +33,10 @@ int main(int argc, char ** argv) {
 		SDL_Log("Working Path: %s\n", argv[0]);
 	init_sdl();
 	SDL_Window * window = SDL_CreateWindow("Yookai 妖召", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_VULKAN);
-	SDL_Surface * surfaceForSoftwareRender = SDL_GetWindowSurface(window);
+	/*SDL_Surface * surfaceForSoftwareRender = SDL_GetWindowSurface(window);
 	SDL_Renderer * renderer = SDL_CreateSoftwareRenderer(surfaceForSoftwareRender);
-	if (renderer == NULL)
-		printf("FUCK");
 
-	SDL_Texture * testTexture = load_texture(renderer, RESOURCE_FOLDER "Image/Ming/Ming.png");
+	SDL_Texture * testTexture = load_texture(renderer, RESOURCE_FOLDER "Image/Ming/Ming.png");*/
 	TTF_Font * testFont = TTF_OpenFont(DEFAULT_FONT_PATH, 32);
 
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
@@ -47,20 +45,21 @@ int main(int argc, char ** argv) {
 	while (1) {
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
-		SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
+		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);
 		draw_texture(renderer, testTexture, new_sdl_point(250, 50));
 		draw_string(renderer, testFont, "新月村Test\n换行测试", new_sdl_point(100, 100));
 		SDL_RenderPresent(renderer);
-		SDL_UpdateWindowSurface(window);
+		SDL_UpdateWindowSurface(window);*/
 		SDL_Delay(16);
 	}
 
 LABEL_EXIT:
 	TTF_CloseFont(testFont);
-	SDL_DestroyTexture(testTexture);
+	/*SDL_DestroyTexture(testTexture);
 	SDL_FreeSurface(surfaceForSoftwareRender);
-	SDL_DestroyRenderer(renderer);
+	SDL_DestroyRenderer(renderer);*/
+	cleanup_vulkan();
 	SDL_DestroyWindow(window);
 	cleanup_sdl();
 	return 0;

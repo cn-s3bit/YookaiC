@@ -2,9 +2,14 @@
 #include "SDLExVulkan.h"
 
 VkInstance VulkanInstance;
+VkSurfaceKHR VulkanSurface;
 
 VkInstance get_vk_instance(void) {
 	return VulkanInstance;
+}
+
+VkSurfaceKHR get_vk_surface(void) {
+	return VulkanSurface;
 }
 
 VkInstance initialize_vulkan(SDL_Window * window, unsigned int appVer) {
@@ -17,21 +22,16 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned int appVer) {
 
 	char ** extensions = (char **) malloc(count * sizeof(char *));
 
-	SDL_Log("Extension Malloc: %d\n", (int)extensions);
-
 	if (!SDL_Vulkan_GetInstanceExtensions(window, &count, extensions))
 		SDL_LogError(SDL_LOG_CATEGORY_CUSTOM,
 			"Failed to get vulkan extensions for SDL: %s\n",
 			SDL_GetError()
 		);
 
-	SDL_Log("Extension Get: %d\n", (int)extensions);
-	SDL_Log("Extension Count: %d\n", count);
-
 	VkApplicationInfo appInfo = {
 		.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-		.apiVersion = VK_API_VERSION_1_1,
-		.engineVersion = VK_MAKE_VERSION(1, 0, 0)
+		.apiVersion = VK_API_VERSION_1_0,
+		.engineVersion = VK_MAKE_VERSION(0, 1, 0)
 	};
 	appInfo.applicationVersion = appVer;
 	appInfo.pApplicationName = SDL_GetWindowTitle(window);
@@ -50,6 +50,17 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned int appVer) {
 			"Failed to initialize vulkan: vkCreateInstance returns %d\n",
 			createResult
 		);
+
+	if (!SDL_Vulkan_CreateSurface(window, VulkanInstance, &VulkanSurface))
+		SDL_LogError(SDL_LOG_CATEGORY_CUSTOM,
+			"Failed to get vulkan extensions for SDL: %s\n",
+			SDL_GetError()
+		);
 	
 	return VulkanInstance;
+}
+
+void cleanup_vulkan(void) {
+	vkDestroySurfaceKHR(VulkanInstance, VulkanSurface, NULL);
+	vkDestroyInstance(VulkanInstance, NULL);
 }
