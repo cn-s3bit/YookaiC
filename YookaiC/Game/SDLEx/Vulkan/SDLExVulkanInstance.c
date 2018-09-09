@@ -19,8 +19,16 @@ VkSurfaceKHR get_vk_surface(void) {
 	return VulkanSurface;
 }
 
+VkPhysicalDevice get_vk_physical_device(void) {
+	return VulkanPhysicalDevice;
+}
+
 VkDevice get_vk_device(void) {
 	return VulkanVirualDevice;
+}
+
+VkQueue get_vk_queue(void) {
+	return VulkanGraphicsQueue;
 }
 
 struct SDLExVulkanSwapChain get_vk_swap_chain(void) {

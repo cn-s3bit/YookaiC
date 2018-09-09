@@ -16,5 +16,7 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer);
 void cleanup_vulkan(void);
 int find_queue_families(VkPhysicalDevice device, int required_flag_bit);
 VkDevice get_vk_device(void);
+VkQueue get_vk_queue(void);
+VkPhysicalDevice get_vk_physical_device(void);
 struct SDLExVulkanSwapChain get_vk_swap_chain(void);
 #endif
