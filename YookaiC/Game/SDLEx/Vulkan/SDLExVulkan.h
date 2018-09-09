@@ -5,6 +5,8 @@
 
 VkInstance get_vk_instance(void);
 VkSurfaceKHR get_vk_surface(void);
-VkInstance initialize_vulkan(SDL_Window * window, unsigned int appVer);
+VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer);
 void cleanup_vulkan(void);
+int find_queue_families(VkPhysicalDevice device, int required_flag_bit);
+VkDevice get_vk_device(void);
 #endif
