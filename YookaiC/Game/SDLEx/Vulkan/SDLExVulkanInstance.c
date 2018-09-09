@@ -6,8 +6,10 @@ VkSurfaceKHR VulkanSurface;
 VkPhysicalDevice VulkanPhysicalDevice;
 VkDevice VulkanVirualDevice;
 VkQueue VulkanGraphicsQueue;
-VkSwapchainKHR VulkanSwapChain;
 float QueuePriority = 1.0f;
+
+struct SDLExVulkanSwapChain VulkanSwapChain;
+
 
 VkInstance get_vk_instance(void) {
 	return VulkanInstance;
@@ -19,6 +21,10 @@ VkSurfaceKHR get_vk_surface(void) {
 
 VkDevice get_vk_device(void) {
 	return VulkanVirualDevice;
+}
+
+struct SDLExVulkanSwapChain get_vk_swap_chain(void) {
+	return VulkanSwapChain;
 }
 
 int find_queue_families(VkPhysicalDevice device, int required_flag_bit) {
@@ -176,7 +182,7 @@ static void _sdlex_vulkan_create_swap_chain(SDL_Window * window) {
 	createInfo.clipped = VK_TRUE;
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
-	int ret = vkCreateSwapchainKHR(VulkanVirualDevice, &createInfo, NULL, &VulkanSwapChain);
+	int ret = vkCreateSwapchainKHR(VulkanVirualDevice, &createInfo, NULL, &VulkanSwapChain.SwapChain);
 	if (ret != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_CUSTOM,
 			"Failed to create swap chain: vkCreateSwapchainKHR returns %d\n",
@@ -184,7 +190,11 @@ static void _sdlex_vulkan_create_swap_chain(SDL_Window * window) {
 		);
 		return;
 	}
-	SDL_Log("Created Swap Chain at %d", (unsigned)VulkanSwapChain);
+	VulkanSwapChain.SwapChainInfo = createInfo;
+	vkGetSwapchainImagesKHR(VulkanVirualDevice, VulkanSwapChain.SwapChain, &VulkanSwapChain.ImageCount, NULL);
+	VulkanSwapChain.Images = (VkImage *) malloc(VulkanSwapChain.ImageCount * sizeof(VkImage));
+	vkGetSwapchainImagesKHR(VulkanVirualDevice, VulkanSwapChain.SwapChain, &VulkanSwapChain.ImageCount, VulkanSwapChain.Images);
+	SDL_Log("Created Swap Chain at %d", (unsigned)VulkanSwapChain.SwapChain);
 }
 
 VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
@@ -243,7 +253,8 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
 }
 
 void cleanup_vulkan(void) {
-	vkDestroySwapchainKHR(VulkanVirualDevice, VulkanSwapChain, NULL);
+	free(VulkanSwapChain.Images);
+	vkDestroySwapchainKHR(VulkanVirualDevice, VulkanSwapChain.SwapChain, NULL);
 	vkDestroyDevice(VulkanVirualDevice, NULL);
 	vkDestroySurfaceKHR(VulkanInstance, VulkanSurface, NULL);
 	vkDestroyInstance(VulkanInstance, NULL);
