@@ -9,8 +9,7 @@ SDL_Texture * load_texture(SDL_Renderer * targetRenderer, char * filename) {
 
 
 SDL_Rect texture_frame(SDL_Texture * texture) {
-	SDL_Rect result;
-	result.x = result.y = 0;
+	SDL_Rect result = { .x = 0,.y = 0 };
 	SDL_QueryTexture(texture, NULL, NULL, &result.w, &result.h);
 	return result;
 }
