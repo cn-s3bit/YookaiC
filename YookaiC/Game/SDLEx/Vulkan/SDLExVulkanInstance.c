@@ -6,6 +6,7 @@ VkSurfaceKHR VulkanSurface;
 VkPhysicalDevice VulkanPhysicalDevice;
 VkDevice VulkanVirualDevice;
 VkQueue VulkanGraphicsQueue;
+VkSwapchainKHR VulkanSwapChain;
 float QueuePriority = 1.0f;
 
 VkInstance get_vk_instance(void) {
@@ -38,6 +39,25 @@ int find_queue_families(VkPhysicalDevice device, int required_flag_bit) {
 	return -1;
 }
 
+static SDL_bool _sdlex_vulkan_check_device_extension_support(VkPhysicalDevice device) {
+	unsigned extensionCount;
+	vkEnumerateDeviceExtensionProperties(device, NULL, &extensionCount, NULL);
+
+	VkExtensionProperties * availableExtensions = (VkExtensionProperties *)malloc(extensionCount * sizeof(VkExtensionProperties));
+	
+	vkEnumerateDeviceExtensionProperties(device, NULL, &extensionCount, availableExtensions);
+	int got = 0;
+
+	for (unsigned i = 0; i < extensionCount; i++) {
+		if (SDL_strcmp(availableExtensions[i].extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0)
+			++got;
+	}
+
+	free(availableExtensions);
+
+	return got == 1 ? SDL_TRUE : SDL_FALSE;
+}
+
 static void _sdlex_vulkan_pick_physical_device(void) {
 	unsigned deviceCount = 0;
 	vkEnumeratePhysicalDevices(VulkanInstance, &deviceCount, NULL);
@@ -56,7 +76,9 @@ static void _sdlex_vulkan_pick_physical_device(void) {
 		vkGetPhysicalDeviceProperties(devices[i], &deviceProperties);
 		// VkPhysicalDeviceFeatures deviceFeatures;
 		// vkGetPhysicalDeviceFeatures(devices[i], &deviceFeatures);
-		if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && find_queue_families(devices[i], VK_QUEUE_GRAPHICS_BIT) >= 0) {
+		if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+			&& _sdlex_vulkan_check_device_extension_support(devices[i])
+			&& find_queue_families(devices[i], VK_QUEUE_GRAPHICS_BIT) >= 0) {
 			result = devices[i];
 			SDL_Log("GPU Device: %s at %d", deviceProperties.deviceName, (unsigned)result);
 			break;
@@ -66,7 +88,8 @@ static void _sdlex_vulkan_pick_physical_device(void) {
 		VkPhysicalDeviceProperties deviceProperties;
 		for (unsigned i = 0; i < deviceCount; i++) {
 			vkGetPhysicalDeviceProperties(devices[i], &deviceProperties);
-			if (find_queue_families(devices[i], VK_QUEUE_GRAPHICS_BIT) >= 0) {
+			if (find_queue_families(devices[i], VK_QUEUE_GRAPHICS_BIT) >= 0
+				&& _sdlex_vulkan_check_device_extension_support(devices[i])) {
 				result = devices[i];
 				SDL_Log("No Discrete GPU Supported, Using Device: %s at %d",
 					deviceProperties.deviceName, (unsigned)result
@@ -95,7 +118,9 @@ static void _sdlex_vulkan_create_virtual_device(void) {
 	VkDeviceCreateInfo createInfo = { .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };
 	createInfo.pQueueCreateInfos = &queueCreateInfo;
 	createInfo.queueCreateInfoCount = 1;
-	createInfo.enabledExtensionCount = 0;
+	createInfo.enabledExtensionCount = 1;
+	char * extensions[1] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+	createInfo.ppEnabledExtensionNames = extensions;
 	createInfo.enabledLayerCount = 0;
 
 	int ret = vkCreateDevice(VulkanPhysicalDevice, &createInfo, NULL, &VulkanVirualDevice);
@@ -108,6 +133,58 @@ static void _sdlex_vulkan_create_virtual_device(void) {
 	}
 	vkGetDeviceQueue(VulkanVirualDevice, queueCreateInfo.queueFamilyIndex, 0, &VulkanGraphicsQueue);
 	SDL_Log("Vulkan Virtual Device Created: %d with queue at %d", (unsigned)VulkanVirualDevice, (unsigned)VulkanGraphicsQueue);
+
+}
+
+static void _sdlex_vulkan_create_swap_chain(SDL_Window * window) {
+	VkSurfaceFormatKHR surfaceFormat = {
+		.format = VK_FORMAT_B8G8R8A8_UNORM,
+		.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
+	};
+	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
+	VkSurfaceCapabilitiesKHR capabilities;
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanPhysicalDevice, VulkanSurface, &capabilities);
+	VkExtent2D extent;
+	if (capabilities.currentExtent.width != SDL_MAX_UINT32) {
+		extent = capabilities.currentExtent;
+	}
+	else {
+		VkExtent2D actualExtent;
+		SDL_GetWindowSize(window, &actualExtent.width, &actualExtent.height);
+		actualExtent.width = SDL_max(capabilities.minImageExtent.width, SDL_min(capabilities.maxImageExtent.width, actualExtent.width));
+		actualExtent.height = SDL_max(capabilities.minImageExtent.height, SDL_min(capabilities.maxImageExtent.height, actualExtent.height));
+
+		extent = actualExtent;
+	}
+
+	unsigned imageCount = capabilities.minImageCount + 1;
+	if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
+		imageCount = capabilities.maxImageCount;
+	}
+
+	VkSwapchainCreateInfoKHR createInfo = { .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
+	createInfo.surface = VulkanSurface;
+	createInfo.minImageCount = imageCount;
+	createInfo.imageFormat = surfaceFormat.format;
+	createInfo.imageColorSpace = surfaceFormat.colorSpace;
+	createInfo.imageExtent = extent;
+	createInfo.imageArrayLayers = 1;
+	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	createInfo.preTransform = capabilities.currentTransform;
+	createInfo.presentMode = presentMode;
+	createInfo.clipped = VK_TRUE;
+	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR;
+	createInfo.oldSwapchain = VK_NULL_HANDLE;
+	int ret = vkCreateSwapchainKHR(VulkanVirualDevice, &createInfo, NULL, &VulkanSwapChain);
+	if (ret != VK_SUCCESS) {
+		SDL_LogError(SDL_LOG_CATEGORY_CUSTOM,
+			"Failed to create swap chain: vkCreateSwapchainKHR returns %d\n",
+			ret
+		);
+		return;
+	}
+	SDL_Log("Created Swap Chain at %d", (unsigned)VulkanSwapChain);
 }
 
 VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
@@ -159,11 +236,14 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
 			"Failed to get vulkan extensions for SDL: %s\n",
 			SDL_GetError()
 		);
+
+	_sdlex_vulkan_create_swap_chain(window);
 	
 	return VulkanInstance;
 }
 
 void cleanup_vulkan(void) {
+	vkDestroySwapchainKHR(VulkanVirualDevice, VulkanSwapChain, NULL);
 	vkDestroyDevice(VulkanVirualDevice, NULL);
 	vkDestroySurfaceKHR(VulkanInstance, VulkanSurface, NULL);
 	vkDestroyInstance(VulkanInstance, NULL);
