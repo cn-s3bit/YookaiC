@@ -5,6 +5,7 @@
 struct SDLExVulkanSwapChain {
 	unsigned ImageCount;
 	VkImage * Images;
+	VkImageView * ImageViews;
 	VkSwapchainKHR SwapChain;
 	VkSwapchainCreateInfoKHR SwapChainInfo;
 };

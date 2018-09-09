@@ -156,7 +156,10 @@ static void _sdlex_vulkan_create_swap_chain(SDL_Window * window) {
 	}
 	else {
 		VkExtent2D actualExtent;
-		SDL_GetWindowSize(window, &actualExtent.width, &actualExtent.height);
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		actualExtent.width = (unsigned)w;
+		actualExtent.height = (unsigned)h;
 		actualExtent.width = SDL_max(capabilities.minImageExtent.width, SDL_min(capabilities.maxImageExtent.width, actualExtent.width));
 		actualExtent.height = SDL_max(capabilities.minImageExtent.height, SDL_min(capabilities.maxImageExtent.height, actualExtent.height));
 
@@ -194,6 +197,30 @@ static void _sdlex_vulkan_create_swap_chain(SDL_Window * window) {
 	vkGetSwapchainImagesKHR(VulkanVirualDevice, VulkanSwapChain.SwapChain, &VulkanSwapChain.ImageCount, NULL);
 	VulkanSwapChain.Images = (VkImage *) malloc(VulkanSwapChain.ImageCount * sizeof(VkImage));
 	vkGetSwapchainImagesKHR(VulkanVirualDevice, VulkanSwapChain.SwapChain, &VulkanSwapChain.ImageCount, VulkanSwapChain.Images);
+	VulkanSwapChain.ImageViews = (VkImageView *) malloc(VulkanSwapChain.ImageCount * sizeof(VkImageView));
+	for (unsigned i = 0; i < VulkanSwapChain.ImageCount; i++) {
+		VkImageViewCreateInfo createInfo2 = { .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
+		createInfo2.image = VulkanSwapChain.Images[i];
+		createInfo2.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		createInfo2.format = surfaceFormat.format;
+		createInfo2.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+		createInfo2.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+		createInfo2.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+		createInfo2.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+		createInfo2.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		createInfo2.subresourceRange.baseMipLevel = 0;
+		createInfo2.subresourceRange.levelCount = 1;
+		createInfo2.subresourceRange.baseArrayLayer = 0;
+		createInfo2.subresourceRange.layerCount = 1;
+		ret = vkCreateImageView(VulkanVirualDevice, &createInfo2, NULL, &VulkanSwapChain.ImageViews[i]);
+		if (ret != VK_SUCCESS) {
+			SDL_LogError(SDL_LOG_CATEGORY_CUSTOM,
+				"Failed to create image view: vkCreateImageView returns %d\n",
+				ret
+			);
+			return;
+		}
+	}
 	SDL_Log("Created Swap Chain at %d", (unsigned)VulkanSwapChain.SwapChain);
 }
 
@@ -253,7 +280,11 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
 }
 
 void cleanup_vulkan(void) {
+	for (unsigned i = 0; i < VulkanSwapChain.ImageCount; i++) {
+		vkDestroyImageView(VulkanVirualDevice, VulkanSwapChain.ImageViews[i], NULL);
+	}
 	free(VulkanSwapChain.Images);
+	free(VulkanSwapChain.ImageViews);
 	vkDestroySwapchainKHR(VulkanVirualDevice, VulkanSwapChain.SwapChain, NULL);
 	vkDestroyDevice(VulkanVirualDevice, NULL);
 	vkDestroySurfaceKHR(VulkanInstance, VulkanSurface, NULL);
