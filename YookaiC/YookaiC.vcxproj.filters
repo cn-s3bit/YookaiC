@@ -23,6 +23,9 @@
     <Filter Include="源文件\Game\SDLEx">
       <UniqueIdentifier>{338cc6aa-92a5-4269-a70c-7dc096145e7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Game\SDLEx\Vulkan">
+      <UniqueIdentifier>{31ed7be2-3a95-4ffd-8934-33a067340674}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VCSDL\include\begin_code.h">
@@ -295,6 +298,9 @@
     <ClInclude Include="Game\SDLEx\MathUtils.h">
       <Filter>源文件\Game\SDLEx</Filter>
     </ClInclude>
+    <ClInclude Include="Game\SDLEx\Vulkan\SDLExVulkan.h">
+      <Filter>源文件\Game\SDLEx\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">
@@ -305,6 +311,9 @@
     </ClCompile>
     <ClCompile Include="Game\SDLEx\RenderUtils.c">
       <Filter>源文件\Game\SDLEx</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c">
+      <Filter>源文件\Game\SDLEx\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -318,6 +327,9 @@
       <Filter>Imported Libraries</Filter>
     </Library>
     <Library Include="VCSDL\lib\win32\SDL2_ttf.lib">
+      <Filter>Imported Libraries</Filter>
+    </Library>
+    <Library Include="..\..\VulkanSDK\1.1.82.1\Lib32\vulkan-1.lib">
       <Filter>Imported Libraries</Filter>
     </Library>
   </ItemGroup>

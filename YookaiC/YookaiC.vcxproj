@@ -89,7 +89,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;D:\VulkanSDK\1.1.82.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -148,6 +148,7 @@
     <ClInclude Include="Game\SDLEx\MathUtils.h" />
     <ClInclude Include="Game\SDLEx\RenderUtils.h" />
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />
+    <ClInclude Include="Game\SDLEx\Vulkan\SDLExVulkan.h" />
     <ClInclude Include="VCSDL\include\begin_code.h" />
     <ClInclude Include="VCSDL\include\close_code.h" />
     <ClInclude Include="VCSDL\include\SDL.h" />
@@ -238,8 +239,10 @@
     <ClCompile Include="Game\EntryPoint.c" />
     <ClCompile Include="Game\SDLEx\ImageUtils.c" />
     <ClCompile Include="Game\SDLEx\RenderUtils.c" />
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="..\..\VulkanSDK\1.1.82.1\Lib32\vulkan-1.lib" />
     <Library Include="VCSDL\lib\win32\SDL2.lib" />
     <Library Include="VCSDL\lib\win32\SDL2main.lib" />
     <Library Include="VCSDL\lib\win32\SDL2_image.lib" />
