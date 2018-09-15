@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Game\Constants.h" />
+    <ClInclude Include="Game\SDLEx\FileUtils.h" />
     <ClInclude Include="Game\SDLEx\ImageUtils.h" />
     <ClInclude Include="Game\SDLEx\MathUtils.h" />
     <ClInclude Include="Game\SDLEx\RenderUtils.h" />
@@ -237,6 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c" />
+    <ClCompile Include="Game\SDLEx\FileUtils.c" />
     <ClCompile Include="Game\SDLEx\ImageUtils.c" />
     <ClCompile Include="Game\SDLEx\RenderUtils.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c" />

@@ -40,6 +40,7 @@ int main(int argc, char ** argv) {
 	TTF_Font * testFont = TTF_OpenFont(DEFAULT_FONT_PATH, 32);
 
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
+	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert", RESOURCE_FOLDER "Shaders/default.frag");
 
 	// Main Loop
 	while (1) {
@@ -59,6 +60,7 @@ LABEL_EXIT:
 	/*SDL_DestroyTexture(testTexture);
 	SDL_FreeSurface(surfaceForSoftwareRender);
 	SDL_DestroyRenderer(renderer);*/
+	cleanup_vulkan_pipeline();
 	cleanup_vulkan();
 	SDL_DestroyWindow(window);
 	cleanup_sdl();

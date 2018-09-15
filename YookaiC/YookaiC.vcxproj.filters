@@ -301,6 +301,9 @@
     <ClInclude Include="Game\SDLEx\Vulkan\SDLExVulkan.h">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="Game\SDLEx\FileUtils.h">
+      <Filter>源文件\Game\SDLEx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">
@@ -317,6 +320,9 @@
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanPipeline.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\FileUtils.c">
+      <Filter>源文件\Game\SDLEx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
