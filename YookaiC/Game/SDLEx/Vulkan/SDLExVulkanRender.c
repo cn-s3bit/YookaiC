@@ -7,12 +7,8 @@ void sdlex_test_render(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipe
 	VkSemaphoreCreateInfo semaphoreInfo = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
 	if (vkCreateSemaphore(device, &semaphoreInfo, NULL, &imageAvailableSemaphore) != VK_SUCCESS ||
 		vkCreateSemaphore(device, &semaphoreInfo, NULL, &renderFinishedSemaphore) != VK_SUCCESS) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-			"Fuck 1");
 		return;
 	}
-	vkDestroySemaphore(device, renderFinishedSemaphore, NULL);
-	vkDestroySemaphore(device, imageAvailableSemaphore, NULL);
 
 	unsigned imageIndex;
 	vkAcquireNextImageKHR(device, swapchain->SwapChain, SDL_MAX_SINT32,
@@ -32,9 +28,7 @@ void sdlex_test_render(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipe
 	submitInfo.pSignalSemaphores = signalSemaphores;
 	int ret = vkQueueSubmit(get_vk_queue(), 1, &submitInfo, VK_NULL_HANDLE);
 	if (ret != VK_SUCCESS) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-			"Fuck Queue Submit %d", ret);
-		// return;
+		return;
 	}
 
 	VkPresentInfoKHR presentInfo = { .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
@@ -48,6 +42,9 @@ void sdlex_test_render(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipe
 	presentInfo.pResults = NULL;
 	vkQueuePresentKHR(get_vk_queue(), &presentInfo);
 	vkQueueWaitIdle(get_vk_queue());
+
+	vkDestroySemaphore(device, renderFinishedSemaphore, NULL);
+	vkDestroySemaphore(device, imageAvailableSemaphore, NULL);
 }
 
 void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline) {
