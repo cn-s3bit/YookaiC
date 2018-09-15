@@ -8,7 +8,7 @@ VkDevice VulkanVirualDevice;
 VkQueue VulkanGraphicsQueue;
 float QueuePriority = 1.0f;
 
-struct SDLExVulkanSwapChain VulkanSwapChain;
+SDLExVulkanSwapChain VulkanSwapChain;
 
 
 VkInstance get_vk_instance(void) {
@@ -31,7 +31,7 @@ VkQueue get_vk_queue(void) {
 	return VulkanGraphicsQueue;
 }
 
-struct SDLExVulkanSwapChain get_vk_swap_chain(void) {
+SDLExVulkanSwapChain get_vk_swap_chain(void) {
 	return VulkanSwapChain;
 }
 

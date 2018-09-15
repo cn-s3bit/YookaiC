@@ -2,13 +2,13 @@
 #define SDLEX_VULKAN_H
 #include <vulkan/vulkan.h>
 #include "../SDLWithPlugins.h"
-struct SDLExVulkanSwapChain {
+typedef struct SDLExVulkanSwapChain {
 	unsigned ImageCount;
 	VkImage * Images;
 	VkImageView * ImageViews;
 	VkSwapchainKHR SwapChain;
 	VkSwapchainCreateInfoKHR SwapChainInfo;
-};
+} SDLExVulkanSwapChain;
 
 VkInstance get_vk_instance(void);
 VkSurfaceKHR get_vk_surface(void);
