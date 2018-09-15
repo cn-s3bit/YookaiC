@@ -44,15 +44,9 @@ int main(int argc, char ** argv) {
 	TTF_Font * testFont = TTF_OpenFont(DEFAULT_FONT_PATH, 32);
 
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
-	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert", RESOURCE_FOLDER "Shaders/default.frag");
+	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert.spv", RESOURCE_FOLDER "Shaders/default.frag.spv");
 
 	sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
-
-	Vector2 test = get_vct2op_context()
-		->Set(vector2_one())
-		->Add(vector2_unitX())
-		->Current;
-	printf("(%f, %f)", test.X, test.Y);
 
 	// Main Loop
 	while (1) {

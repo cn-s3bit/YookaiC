@@ -1,6 +1,29 @@
 #include "SDLExVulkan.h"
+#include "../MathUtils.h"
+#include "../MathEx/MathEx.h"
+
+Vertex Vertices[3] = {
+	{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f } },
+	{ { 0.5f, 0.7f },{ 0.0f, 1.0f, 0.0f } },
+	{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f } }
+};
 
 void sdlex_test_render(SDLExVulkanSwapChain * swapchain) {
+	// First Update Logic!
+	void * addr = request_vertex_buffer_memory();
+	Vertices[0].Pos.X += 0.001f;
+	Vertices[0].Pos.X = SDLEx_pong(Vertices[0].Pos.X, -0.7f, 0.7f);
+	Vertices[1].Pos.X += 0.002f;
+	Vertices[1].Pos.X = SDLEx_pong(Vertices[1].Pos.X, -0.7f, 0.7f);
+	Vertices[2].Pos.X += 0.003f;
+	Vertices[2].Pos.X = SDLEx_pong(Vertices[2].Pos.X, -0.7f, 0.7f);
+	if (Vertices[1].Pos.X < Vertices[2].Pos.X) {
+		SDLEx_swap_float(&Vertices[1].Pos.X, &Vertices[2].Pos.X);
+	}
+	SDL_Log("%f %f %f", Vertices[0].Pos.X, Vertices[1].Pos.X, Vertices[2].Pos.X);
+	SDL_memcpy(addr, Vertices, sizeof(Vertices));
+	flush_vertex_buffer_memory();
+
 	VkDevice device = get_vk_device();
 	VkSemaphore imageAvailableSemaphore;
 	VkSemaphore renderFinishedSemaphore;
@@ -71,6 +94,11 @@ void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphic
 		vkCmdBeginRenderPass(swapchain->CommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		vkCmdBindPipeline(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->GraphicsPipeline);
+
+		VkBuffer buffer = get_vk_vertex_buffer();
+		VkDeviceSize offset = 0;
+		vkCmdBindVertexBuffers(swapchain->CommandBuffers[i], 0, 1, &buffer, &offset);
+
 		vkCmdDraw(swapchain->CommandBuffers[i], 3, 1, 0, 0);
 
 		vkCmdEndRenderPass(swapchain->CommandBuffers[i]);

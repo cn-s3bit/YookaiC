@@ -88,7 +88,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;D:\VulkanSDK\1.1.82.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -250,6 +250,7 @@
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanPipeline.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanRender.c" />
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanVertex.c" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\VulkanSDK\1.1.82.1\Lib32\vulkan-1.lib" />
