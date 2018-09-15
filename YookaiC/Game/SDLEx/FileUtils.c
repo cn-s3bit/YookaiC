@@ -15,7 +15,7 @@ char * read_file_to_char_array(const char * filename, size_t * size_out) {
 	size_t rsize = (size_t) size;
 	char * buffer = malloc(rsize);
 	SDL_RWseek(fp, 0, 0);
-	SDL_Log("Tried to read %d from %s, returns %d", rsize, filename, SDL_RWread(fp, buffer, rsize, 1));
+	SDL_Log("Tried to read %d from %s, returns %d\n", rsize, filename, SDL_RWread(fp, buffer, rsize, 1));
 	SDL_RWclose(fp);
 	*size_out = rsize;
 	return buffer;
