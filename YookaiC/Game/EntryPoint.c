@@ -62,7 +62,7 @@ LABEL_EXIT:
 	SDL_DestroyRenderer(renderer);*/
 	cleanup_vulkan_pipeline();
 	cleanup_vulkan();
-	SDL_DestroyWindow(window);
+	// SDL_DestroyWindow(window);
 	cleanup_sdl();
 	return 0;
 }
