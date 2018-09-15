@@ -241,6 +241,7 @@
     <ClCompile Include="Game\SDLEx\FileUtils.c" />
     <ClCompile Include="Game\SDLEx\ImageUtils.c" />
     <ClCompile Include="Game\SDLEx\RenderUtils.c" />
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanPipeline.c" />
   </ItemGroup>

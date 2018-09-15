@@ -15,7 +15,7 @@ VkShaderModule create_shader_module(char * code, size_t codeSize) {
 	int ret;
 	if ((ret = vkCreateShaderModule(get_vk_device(), &createInfo, NULL, &shaderModule)) != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-			"Failed to Create Shader Module: vkCreateShaderModule returns %d", ret);
+			"Failed to Create Shader Module: vkCreateShaderModule returns %d\n", ret);
 		return VK_NULL_HANDLE;
 	}
 
@@ -44,7 +44,7 @@ static void _sdlex_prepare_pipeline(void) {
 		&pipelineLayoutInfo, NULL,
 		&VulkanPipeline.PipelineLayout)) != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-			"Failed to Create Pipeline Layout: vkCreatePipelineLayout returns %d", ret);
+			"Failed to Create Pipeline Layout: vkCreatePipelineLayout returns %d\n", ret);
 		return;
 	}
 
@@ -76,7 +76,7 @@ static void _sdlex_prepare_pipeline(void) {
 	if ((ret = vkCreateRenderPass(get_vk_device(), &renderPassInfo, NULL,
 		&VulkanPipeline.RenderPass)) != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-			"Failed to Create Render Pass: vkCreateRenderPass returns %d", ret);
+			"Failed to Create Render Pass: vkCreateRenderPass returns %d\n", ret);
 		return;
 	}
 }
@@ -182,10 +182,11 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 	int ret = vkCreateGraphicsPipelines(get_vk_device(), VK_NULL_HANDLE, 1, &pipelineInfo, NULL, &VulkanPipeline.GraphicsPipeline);
 	if (ret != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-			"Failed to Create Graphics Pipeline: vkCreateGraphicsPipelines returns %d", ret);
+			"Failed to Create Graphics Pipeline: vkCreateGraphicsPipelines returns %d\n", ret);
 	}
 	else {
-		SDL_Log("Created Pipeline at %u", (unsigned)VulkanPipeline.GraphicsPipeline);
+		SDL_Log("Created Pipeline at %u\n", (unsigned)VulkanPipeline.GraphicsPipeline);
+		create_frame_buffers(get_vk_swap_chain(), &VulkanPipeline);
 	}
 
 	vkDestroyShaderModule(get_vk_device(), fragShaderModule, NULL);
@@ -195,6 +196,7 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 
 void cleanup_vulkan_pipeline(void) {
 	VkDevice device = get_vk_device();
+	cleanup_frame_buffers(get_vk_swap_chain(), &VulkanPipeline);
 	vkDestroyPipeline(device, VulkanPipeline.GraphicsPipeline, NULL);
 	vkDestroyPipelineLayout(device, VulkanPipeline.PipelineLayout, NULL);
 	vkDestroyRenderPass(device, VulkanPipeline.RenderPass, NULL);

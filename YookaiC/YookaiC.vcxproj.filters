@@ -324,6 +324,9 @@
     <ClCompile Include="Game\SDLEx\FileUtils.c">
       <Filter>源文件\Game\SDLEx</Filter>
     </ClCompile>
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c">
+      <Filter>源文件\Game\SDLEx\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="VCSDL\lib\win32\SDL2.lib">
