@@ -1,6 +1,6 @@
 #include "SDLExVulkan.h"
 
-void sdlex_test_render(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline) {
+void sdlex_test_render(SDLExVulkanSwapChain * swapchain) {
 	VkDevice device = get_vk_device();
 	VkSemaphore imageAvailableSemaphore;
 	VkSemaphore renderFinishedSemaphore;
