@@ -61,6 +61,7 @@ int main(int argc, char ** argv) {
 	}
 
 LABEL_EXIT:
+	vkDeviceWaitIdle(get_vk_device());
 	TTF_CloseFont(testFont);
 	/*SDL_DestroyTexture(testTexture);
 	SDL_FreeSurface(surfaceForSoftwareRender);
