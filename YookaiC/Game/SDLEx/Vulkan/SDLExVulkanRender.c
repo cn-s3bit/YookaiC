@@ -11,16 +11,12 @@ Vertex Vertices[3] = {
 void sdlex_test_render(SDLExVulkanSwapChain * swapchain) {
 	// First Update Logic!
 	void * addr = request_vertex_buffer_memory();
-	Vertices[0].Pos.X += 0.001f;
-	Vertices[0].Pos.X = SDLEx_pong(Vertices[0].Pos.X, -0.7f, 0.7f);
-	Vertices[1].Pos.X += 0.002f;
-	Vertices[1].Pos.X = SDLEx_pong(Vertices[1].Pos.X, -0.7f, 0.7f);
-	Vertices[2].Pos.X += 0.003f;
-	Vertices[2].Pos.X = SDLEx_pong(Vertices[2].Pos.X, -0.7f, 0.7f);
-	if (Vertices[1].Pos.X < Vertices[2].Pos.X) {
-		SDLEx_swap_float(&Vertices[1].Pos.X, &Vertices[2].Pos.X);
-	}
-	SDL_Log("%f %f %f", Vertices[0].Pos.X, Vertices[1].Pos.X, Vertices[2].Pos.X);
+	Vertices[0].Pos.X += 0.002f;
+	Vertices[0].Pos.X = SDLEx_pong(Vertices[0].Pos.X, -1.0f, 1.0f);
+	Vertices[1].Pos.X += 0.004f;
+	Vertices[1].Pos.X = SDLEx_pong(Vertices[1].Pos.X, -1.0f, 1.0f);
+	Vertices[2].Pos.X += 0.006f;
+	Vertices[2].Pos.X = SDLEx_pong(Vertices[2].Pos.X, -1.0f, 1.0f);
 	SDL_memcpy(addr, Vertices, sizeof(Vertices));
 	flush_vertex_buffer_memory();
 
