@@ -195,6 +195,7 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 
 void cleanup_vulkan_pipeline(void) {
 	VkDevice device = get_vk_device();
-	vkDestroyPipelineLayout(device, get_vk_pipeline()->PipelineLayout, NULL);
-	vkDestroyRenderPass(device, get_vk_pipeline()->RenderPass, NULL);
+	vkDestroyPipeline(device, VulkanPipeline.GraphicsPipeline, NULL);
+	vkDestroyPipelineLayout(device, VulkanPipeline.PipelineLayout, NULL);
+	vkDestroyRenderPass(device, VulkanPipeline.RenderPass, NULL);
 }
