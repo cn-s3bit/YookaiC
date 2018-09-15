@@ -6,6 +6,7 @@ typedef struct SDLExVulkanSwapChain {
 	unsigned ImageCount;
 	VkImage * Images;
 	VkImageView * ImageViews;
+	VkCommandBuffer * CommandBuffers;
 	VkSwapchainKHR SwapChain;
 	VkSwapchainCreateInfoKHR SwapChainInfo;
 } SDLExVulkanSwapChain;
@@ -36,4 +37,7 @@ void cleanup_vulkan_pipeline(void);
 
 void create_frame_buffers(SDLExVulkanSwapChain * pSwapChain, SDLExVulkanGraphicsPipeline * pPipeline);
 void cleanup_frame_buffers(SDLExVulkanSwapChain * pSwapChain, SDLExVulkanGraphicsPipeline * pPipeline);
+
+VkCommandPool create_command_buffer(SDLExVulkanSwapChain * pSwapChain);
+void cleanup_command_buffer(SDLExVulkanSwapChain * pSwapChain);
 #endif

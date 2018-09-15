@@ -283,11 +283,13 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
 		);
 
 	_sdlex_vulkan_create_swap_chain(window);
+	create_command_buffer(&VulkanSwapChain);
 	
 	return VulkanInstance;
 }
 
 void cleanup_vulkan(void) {
+	cleanup_command_buffer(&VulkanSwapChain);
 	for (unsigned i = 0; i < VulkanSwapChain.ImageCount; i++) {
 		vkDestroyImageView(VulkanVirualDevice, VulkanSwapChain.ImageViews[i], NULL);
 	}
