@@ -327,7 +327,10 @@
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.cpp">
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanRender.c">
+      <Filter>源文件\Game\SDLEx\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>

@@ -241,10 +241,11 @@
     <ClCompile Include="Game\SDLEx\FileUtils.c" />
     <ClCompile Include="Game\SDLEx\ImageUtils.c" />
     <ClCompile Include="Game\SDLEx\RenderUtils.c" />
-    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.cpp" />
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanPipeline.c" />
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanRender.c" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\VulkanSDK\1.1.82.1\Lib32\vulkan-1.lib" />

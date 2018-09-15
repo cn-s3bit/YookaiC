@@ -42,10 +42,14 @@ int main(int argc, char ** argv) {
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
 	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert", RESOURCE_FOLDER "Shaders/default.frag");
 
+	extern void sdlex_test_render(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline);
+	extern void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline);
+	sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
 	// Main Loop
 	while (1) {
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
+		sdlex_test_render(get_vk_swap_chain(), get_vk_pipeline());
 		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);
 		draw_texture(renderer, testTexture, new_sdl_point(250, 50));
