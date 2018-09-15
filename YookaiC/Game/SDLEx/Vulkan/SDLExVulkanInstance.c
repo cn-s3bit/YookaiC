@@ -31,8 +31,8 @@ VkQueue get_vk_queue(void) {
 	return VulkanGraphicsQueue;
 }
 
-SDLExVulkanSwapChain get_vk_swap_chain(void) {
-	return VulkanSwapChain;
+SDLExVulkanSwapChain * get_vk_swap_chain(void) {
+	return &VulkanSwapChain;
 }
 
 int find_queue_families(VkPhysicalDevice device, int required_flag_bit) {

@@ -10,6 +10,12 @@ typedef struct SDLExVulkanSwapChain {
 	VkSwapchainCreateInfoKHR SwapChainInfo;
 } SDLExVulkanSwapChain;
 
+typedef struct SDLExVulkanGraphicsPipeline {
+	VkPipelineLayout PipelineLayout;
+	VkRenderPass RenderPass;
+	VkPipeline GraphicsPipeline;
+} SDLExVulkanGraphicsPipeline;
+
 VkInstance get_vk_instance(void);
 VkSurfaceKHR get_vk_surface(void);
 VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer);
@@ -18,8 +24,10 @@ int find_queue_families(VkPhysicalDevice device, int required_flag_bit);
 VkDevice get_vk_device(void);
 VkQueue get_vk_queue(void);
 VkPhysicalDevice get_vk_physical_device(void);
-struct SDLExVulkanSwapChain get_vk_swap_chain(void);
+SDLExVulkanSwapChain * get_vk_swap_chain(void);
+SDLExVulkanGraphicsPipeline * get_vk_pipeline(void);
 VkShaderModule create_shader_module(char * code, size_t codeSize);
-void create_graphics_pipeline_f(const char * vertShaderFilename, const char * fragShaderFilename);
-void create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderModule fragShaderModule);
+VkPipeline create_graphics_pipeline_f(const char * vertShaderFilename, const char * fragShaderFilename);
+VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderModule fragShaderModule);
+void cleanup_vulkan_pipeline(void);
 #endif
