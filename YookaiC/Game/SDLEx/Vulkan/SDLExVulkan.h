@@ -19,4 +19,7 @@ VkDevice get_vk_device(void);
 VkQueue get_vk_queue(void);
 VkPhysicalDevice get_vk_physical_device(void);
 struct SDLExVulkanSwapChain get_vk_swap_chain(void);
+VkShaderModule create_shader_module(char * code, size_t codeSize);
+void create_graphics_pipeline_f(const char * vertShaderFilename, const char * fragShaderFilename);
+void create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderModule fragShaderModule);
 #endif
