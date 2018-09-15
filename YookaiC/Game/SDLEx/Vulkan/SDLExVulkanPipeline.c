@@ -115,10 +115,12 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = { .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO };
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = 0;
-	vertexInputInfo.pVertexBindingDescriptions = NULL;
-	vertexInputInfo.vertexAttributeDescriptionCount = 0;
-	vertexInputInfo.pVertexAttributeDescriptions = NULL;
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
+	VkVertexInputBindingDescription dex = _sdlex_get_binding_description();
+	vertexInputInfo.pVertexBindingDescriptions = &dex;
+	vertexInputInfo.vertexAttributeDescriptionCount = 2;
+	VkVertexInputAttributeDescription * att = _sdlex_get_attribute_descriptions();
+	vertexInputInfo.pVertexAttributeDescriptions = att;
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = { .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO };
 	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -199,8 +201,9 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 	else {
 		SDL_Log("Created Pipeline at %u\n", (unsigned)VulkanPipeline.GraphicsPipeline);
 		create_frame_buffers(get_vk_swap_chain(), &VulkanPipeline);
+		create_vertex_buffer();
 	}
-
+	free(att);
 	vkDestroyShaderModule(get_vk_device(), fragShaderModule, NULL);
 	vkDestroyShaderModule(get_vk_device(), vertShaderModule, NULL);
 	return VulkanPipeline.GraphicsPipeline;
@@ -209,6 +212,7 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 void cleanup_vulkan_pipeline(void) {
 	VkDevice device = get_vk_device();
 	cleanup_frame_buffers(get_vk_swap_chain(), &VulkanPipeline);
+	cleanup_vertex_buffer();
 	vkDestroyPipeline(device, VulkanPipeline.GraphicsPipeline, NULL);
 	vkDestroyPipelineLayout(device, VulkanPipeline.PipelineLayout, NULL);
 	vkDestroyRenderPass(device, VulkanPipeline.RenderPass, NULL);

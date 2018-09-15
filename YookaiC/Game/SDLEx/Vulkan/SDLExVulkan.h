@@ -2,6 +2,7 @@
 #define SDLEX_VULKAN_H
 #include <vulkan/vulkan.h>
 #include "../SDLWithPlugins.h"
+#include "../MathEx/MathEx.h"
 typedef struct SDLExVulkanSwapChain {
 	unsigned ImageCount;
 	VkImage * Images;
@@ -17,6 +18,11 @@ typedef struct SDLExVulkanGraphicsPipeline {
 	VkPipeline GraphicsPipeline;
 	VkFramebuffer * FrameBuffers;
 } SDLExVulkanGraphicsPipeline;
+
+typedef struct Vertex {
+	Vector2 Pos;
+	Vector3 Color;
+} Vertex;
 
 VkInstance get_vk_instance(void);
 VkSurfaceKHR get_vk_surface(void);
@@ -40,4 +46,31 @@ void cleanup_frame_buffers(SDLExVulkanSwapChain * pSwapChain, SDLExVulkanGraphic
 
 VkCommandPool create_command_buffer(SDLExVulkanSwapChain * pSwapChain);
 void cleanup_command_buffer(SDLExVulkanSwapChain * pSwapChain);
+
+void create_vertex_buffer(void);
+void cleanup_vertex_buffer(void);
+VkBuffer get_vk_vertex_buffer(void);
+void * request_vertex_buffer_memory(void);
+void flush_vertex_buffer_memory(void);
+inline VkVertexInputBindingDescription _sdlex_get_binding_description(void) {
+	VkVertexInputBindingDescription bindingDescription;
+	bindingDescription.binding = 0;
+	bindingDescription.stride = sizeof(Vertex);
+	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	return bindingDescription;
+}
+
+inline VkVertexInputAttributeDescription * _sdlex_get_attribute_descriptions(void) {
+	VkVertexInputAttributeDescription * attributeDescriptions;
+	attributeDescriptions = malloc(2 * sizeof(VkVertexInputAttributeDescription));
+	attributeDescriptions[0].binding = 0;
+	attributeDescriptions[0].location = 0;
+	attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+	attributeDescriptions[0].offset = offsetof(Vertex, Pos);
+	attributeDescriptions[1].binding = 0;
+	attributeDescriptions[1].location = 1;
+	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+	attributeDescriptions[1].offset = offsetof(Vertex, Color);
+	return attributeDescriptions;
+}
 #endif
