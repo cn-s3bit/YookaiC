@@ -146,6 +146,9 @@
     <ClInclude Include="Game\Constants.h" />
     <ClInclude Include="Game\SDLEx\FileUtils.h" />
     <ClInclude Include="Game\SDLEx\ImageUtils.h" />
+    <ClInclude Include="Game\SDLEx\MathEx\MathEx.h" />
+    <ClInclude Include="Game\SDLEx\MathEx\Vector2.h" />
+    <ClInclude Include="Game\SDLEx\MathEx\Vector3.h" />
     <ClInclude Include="Game\SDLEx\MathUtils.h" />
     <ClInclude Include="Game\SDLEx\RenderUtils.h" />
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />
@@ -240,6 +243,7 @@
     <ClCompile Include="Game\EntryPoint.c" />
     <ClCompile Include="Game\SDLEx\FileUtils.c" />
     <ClCompile Include="Game\SDLEx\ImageUtils.c" />
+    <ClCompile Include="Game\SDLEx\MathEx\Vector2.c" />
     <ClCompile Include="Game\SDLEx\RenderUtils.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c" />

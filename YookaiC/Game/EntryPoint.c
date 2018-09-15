@@ -3,6 +3,7 @@
 #include "SDLEx/ImageUtils.h"
 #include "SDLEx/RenderUtils.h"
 #include "SDLEx/MathUtils.h"
+#include "SDLEx/MathEx/MathEx.h"
 #include "Constants.h"
 #include "SDLEx/Vulkan/SDLExVulkan.h"
 
@@ -46,6 +47,13 @@ int main(int argc, char ** argv) {
 	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert", RESOURCE_FOLDER "Shaders/default.frag");
 
 	sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
+
+	Vector2 test = get_vct2op_context()
+		->Set(vector2_one())
+		->Add(vector2_unitX())
+		->Current;
+	printf("(%f, %f)", test.X, test.Y);
+
 	// Main Loop
 	while (1) {
 		if (handle_event() == EXIT_SIGNAL)

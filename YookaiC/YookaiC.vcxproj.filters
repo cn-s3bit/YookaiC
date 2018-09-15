@@ -26,6 +26,9 @@
     <Filter Include="源文件\Game\SDLEx\Vulkan">
       <UniqueIdentifier>{31ed7be2-3a95-4ffd-8934-33a067340674}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Game\SDLEx\MathEx">
+      <UniqueIdentifier>{6ea8f810-9477-4579-8057-c3b369f1b17c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VCSDL\include\begin_code.h">
@@ -304,6 +307,15 @@
     <ClInclude Include="Game\SDLEx\FileUtils.h">
       <Filter>源文件\Game\SDLEx</Filter>
     </ClInclude>
+    <ClInclude Include="Game\SDLEx\MathEx\MathEx.h">
+      <Filter>源文件\Game\SDLEx\MathEx</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\MathEx\Vector2.h">
+      <Filter>源文件\Game\SDLEx\MathEx</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\MathEx\Vector3.h">
+      <Filter>源文件\Game\SDLEx\MathEx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">
@@ -332,6 +344,9 @@
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\MathEx\Vector2.c">
+      <Filter>源文件\Game\SDLEx\MathEx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
