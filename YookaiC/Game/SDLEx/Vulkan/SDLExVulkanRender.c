@@ -18,6 +18,13 @@ void sdlex_test_render(SDLExVulkanSwapChain * swapchain) {
 	Vertices[2].Pos.X += 0.006f;
 	Vertices[2].Pos.X = SDLEx_pong(Vertices[2].Pos.X, -1.0f, 1.0f);
 	SDL_memcpy(addr, Vertices, sizeof(Vertices));
+	Vertices[0].Pos.Y *= -1.0f;
+	Vertices[1].Pos.Y *= -1.0f;
+	Vertices[2].Pos.Y *= -1.0f;
+	SDL_memcpy((char *)addr + sizeof(Vertices), Vertices, sizeof(Vertices));
+	Vertices[0].Pos.Y *= -1.0f;
+	Vertices[1].Pos.Y *= -1.0f;
+	Vertices[2].Pos.Y *= -1.0f;
 	flush_vertex_buffer_memory();
 
 	VkDevice device = get_vk_device();
@@ -95,7 +102,7 @@ void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphic
 		VkDeviceSize offset = 0;
 		vkCmdBindVertexBuffers(swapchain->CommandBuffers[i], 0, 1, &buffer, &offset);
 
-		vkCmdDraw(swapchain->CommandBuffers[i], 3, 1, 0, 0);
+		vkCmdDraw(swapchain->CommandBuffers[i], 6, 1, 0, 0);
 
 		vkCmdEndRenderPass(swapchain->CommandBuffers[i]);
 		if ((ret = vkEndCommandBuffer(swapchain->CommandBuffers[i])) != VK_SUCCESS) {
