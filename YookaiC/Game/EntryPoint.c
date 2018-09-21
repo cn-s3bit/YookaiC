@@ -41,6 +41,7 @@ int main(int argc, char ** argv) {
 	SDL_Renderer * renderer = SDL_CreateSoftwareRenderer(surfaceForSoftwareRender);
 
 	SDL_Texture * testTexture = load_texture(renderer, RESOURCE_FOLDER "Image/Ming/Ming.png");*/
+	vector2_log_output(vector2_add(vector2_one(), vector2_one()), "test");
 	TTF_Font * testFont = TTF_OpenFont(DEFAULT_FONT_PATH, 32);
 
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
