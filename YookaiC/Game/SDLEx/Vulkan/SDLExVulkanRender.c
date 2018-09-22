@@ -1,5 +1,5 @@
 #include "SDLExVulkan.h"
-#include "../MathUtils.h"
+#include "../Utils/MathUtils.h"
 #include "../MathEx/MathEx.h"
 
 Vertex Vertices[3] = {

@@ -144,14 +144,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Game\Constants.h" />
-    <ClInclude Include="Game\SDLEx\FileUtils.h" />
-    <ClInclude Include="Game\SDLEx\ImageUtils.h" />
     <ClInclude Include="Game\SDLEx\MathEx\MathEx.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector2.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector3.h" />
-    <ClInclude Include="Game\SDLEx\MathUtils.h" />
-    <ClInclude Include="Game\SDLEx\RenderUtils.h" />
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />
+    <ClInclude Include="Game\SDLEx\Utils\FileUtils.h" />
+    <ClInclude Include="Game\SDLEx\Utils\ImageUtils.h" />
+    <ClInclude Include="Game\SDLEx\Utils\MathUtils.h" />
+    <ClInclude Include="Game\SDLEx\Utils\RenderUtils.h" />
     <ClInclude Include="Game\SDLEx\Vulkan\SDLExVulkan.h" />
     <ClInclude Include="VCSDL\include\begin_code.h" />
     <ClInclude Include="VCSDL\include\close_code.h" />
@@ -241,9 +241,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c" />
-    <ClCompile Include="Game\SDLEx\FileUtils.c" />
-    <ClCompile Include="Game\SDLEx\ImageUtils.c" />
-    <ClCompile Include="Game\SDLEx\RenderUtils.c" />
+    <ClCompile Include="Game\SDLEx\Utils\FileUtils.c" />
+    <ClCompile Include="Game\SDLEx\Utils\ImageUtils.c" />
+    <ClCompile Include="Game\SDLEx\Utils\RenderUtils.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c" />

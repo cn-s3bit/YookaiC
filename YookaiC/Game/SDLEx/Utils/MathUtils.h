@@ -1,6 +1,6 @@
 #ifndef SDLEX_MATH_UTILS_H
 #define SDLEX_MATH_UTILS_H
-#include "SDLWithPlugins.h"
+#include "../SDLWithPlugins.h"
 
 #define SDLEx_clamp(x, lower, upper) SDL_max(SDL_min(x, upper), lower)
 

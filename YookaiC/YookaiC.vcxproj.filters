@@ -29,6 +29,9 @@
     <Filter Include="源文件\Game\SDLEx\MathEx">
       <UniqueIdentifier>{6ea8f810-9477-4579-8057-c3b369f1b17c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Game\SDLEx\Utils">
+      <UniqueIdentifier>{19833be5-80ab-4233-83ce-4ab88a7a75fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VCSDL\include\begin_code.h">
@@ -286,26 +289,14 @@
     <ClInclude Include="VCSDL\include\SDL_ttf.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Game\SDLEx\ImageUtils.h">
-      <Filter>源文件\Game\SDLEx</Filter>
-    </ClInclude>
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h">
       <Filter>源文件\Game\SDLEx</Filter>
     </ClInclude>
     <ClInclude Include="Game\Constants.h">
       <Filter>源文件\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\SDLEx\RenderUtils.h">
-      <Filter>源文件\Game\SDLEx</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\SDLEx\MathUtils.h">
-      <Filter>源文件\Game\SDLEx</Filter>
-    </ClInclude>
     <ClInclude Include="Game\SDLEx\Vulkan\SDLExVulkan.h">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\SDLEx\FileUtils.h">
-      <Filter>源文件\Game\SDLEx</Filter>
     </ClInclude>
     <ClInclude Include="Game\SDLEx\MathEx\MathEx.h">
       <Filter>源文件\Game\SDLEx\MathEx</Filter>
@@ -316,25 +307,28 @@
     <ClInclude Include="Game\SDLEx\MathEx\Vector3.h">
       <Filter>源文件\Game\SDLEx\MathEx</Filter>
     </ClInclude>
+    <ClInclude Include="Game\SDLEx\Utils\RenderUtils.h">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\Utils\FileUtils.h">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\Utils\ImageUtils.h">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SDLEx\Utils\MathUtils.h">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">
       <Filter>源文件\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\SDLEx\ImageUtils.c">
-      <Filter>源文件\Game\SDLEx</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\SDLEx\RenderUtils.c">
-      <Filter>源文件\Game\SDLEx</Filter>
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanPipeline.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\SDLEx\FileUtils.c">
-      <Filter>源文件\Game\SDLEx</Filter>
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
@@ -347,6 +341,15 @@
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanVertex.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\Utils\FileUtils.c">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\Utils\ImageUtils.c">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\Utils\RenderUtils.c">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

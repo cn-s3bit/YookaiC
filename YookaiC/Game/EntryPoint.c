@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "SDLEx/SDLWithPlugins.h"
-#include "SDLEx/ImageUtils.h"
-#include "SDLEx/RenderUtils.h"
-#include "SDLEx/MathUtils.h"
+#include "SDLEx/Utils/ImageUtils.h"
+#include "SDLEx/Utils/RenderUtils.h"
+#include "SDLEx/Utils/MathUtils.h"
 #include "SDLEx/MathEx/MathEx.h"
 #include "Constants.h"
 #include "SDLEx/Vulkan/SDLExVulkan.h"

@@ -1,5 +1,5 @@
 #include "SDLExVulkan.h"
-#include "../FileUtils.h"
+#include "../Utils/FileUtils.h"
 
 SDLExVulkanGraphicsPipeline VulkanPipeline;
 SDLExVulkanGraphicsPipeline * get_vk_pipeline(void) {
