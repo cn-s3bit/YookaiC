@@ -7,6 +7,8 @@
 #include "Constants.h"
 #include "SDLEx/Vulkan/SDLExVulkan.h"
 
+#include "SDLEx/Utils/HashMap.h"
+
 void init_sdl(void) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
@@ -42,6 +44,16 @@ int main(int argc, char ** argv) {
 
 	SDL_Texture * testTexture = load_texture(renderer, RESOURCE_FOLDER "Image/Ming/Ming.png");*/
 	vector2_log_output(vector2_add(vector2_one(), vector2_one()), "test");
+
+	CuckooHashMap * hashmap = create_cuckoo_hashmap();
+	int x = 0;
+	int y = 1;
+	int z = 2;
+	put_cuckoo_hashmap(hashmap, &x, &y);
+	printf("replace: %d\n", *(int *)put_cuckoo_hashmap(hashmap, &x, &z));
+	printf("get: %d\n", *(int *)get_cuckoo_hashmap(hashmap, &x));
+	destroy_cuckoo_hashmap(hashmap);
+
 	TTF_Font * testFont = TTF_OpenFont(DEFAULT_FONT_PATH, 32);
 
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
