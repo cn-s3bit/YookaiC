@@ -365,6 +365,47 @@ void * put_cuckoo_hashmap(CuckooHashMap * map_obj, void * key, void * value) {
 	return NULL;
 }
 
+void * remove_from_cuckoo_hashmap(CuckooHashMap * map_obj, void * key) {
+	int hashCode = map_obj->HashFunc ? map_obj->HashFunc(key) : (int)key;
+	int index = hashCode & map_obj->_mask;
+	if (EQUALS_FUNC(map_obj, key, map_obj->_keyTable[index])) {
+		if (map_obj->AutoFreeWhenRemove) {
+			free(map_obj->_keyTable[index]);
+		}
+		map_obj->_keyTable[index] = NULL;
+		void * oldValue = map_obj->_valueTable[index];
+		map_obj->_valueTable[index] = NULL;
+		map_obj->Size--;
+		return oldValue;
+	}
+
+	index = hash2(map_obj, hashCode);
+	if (EQUALS_FUNC(map_obj, key, map_obj->_keyTable[index])) {
+		if (map_obj->AutoFreeWhenRemove) {
+			free(map_obj->_keyTable[index]);
+		}
+		map_obj->_keyTable[index] = NULL;
+		void * oldValue = map_obj->_valueTable[index];
+		map_obj->_valueTable[index] = NULL;
+		map_obj->Size--;
+		return oldValue;
+	}
+
+	index = hash3(map_obj, hashCode);
+	if (EQUALS_FUNC(map_obj, key, map_obj->_keyTable[index])) {
+		if (map_obj->AutoFreeWhenRemove) {
+			free(map_obj->_keyTable[index]);
+		}
+		map_obj->_keyTable[index] = NULL;
+		void * oldValue = map_obj->_valueTable[index];
+		map_obj->_valueTable[index] = NULL;
+		map_obj->Size--;
+		return oldValue;
+	}
+
+	return _sdlex_hashmap_removestash(map_obj, key);
+}
+
 void destroy_cuckoo_hashmap(CuckooHashMap * map_obj) {
 	if (map_obj->AutoFreeWhenRemove) {
 		for (int i = 0, n = map_obj->_capacity + map_obj->_stashCapacity; i < n; i++) {

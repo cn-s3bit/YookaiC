@@ -47,4 +47,8 @@ void * get_cuckoo_hashmap(CuckooHashMap * map_obj, void * key);
 /// Insert or update the value of the entry specified by @param key with @param value.
 /// @returns The old value of the key in the map, or NULL.
 void * put_cuckoo_hashmap(CuckooHashMap * map_obj, void * key, void * value);
+
+/// Remove the entry specified by @param key.
+/// @returns The value of the key in the map, or NULL if key does not exist.
+void * remove_from_cuckoo_hashmap(CuckooHashMap * map_obj, void * key);
 #endif

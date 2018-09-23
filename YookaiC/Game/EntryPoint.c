@@ -50,8 +50,11 @@ int main(int argc, char ** argv) {
 	int y = 1;
 	int z = 2;
 	put_cuckoo_hashmap(hashmap, &x, &y);
+	printf("get: %d\n", *(int *)get_cuckoo_hashmap(hashmap, &x));
 	printf("replace: %d\n", *(int *)put_cuckoo_hashmap(hashmap, &x, &z));
 	printf("get: %d\n", *(int *)get_cuckoo_hashmap(hashmap, &x));
+	printf("remove: %d\n", *(int *)remove_from_cuckoo_hashmap(hashmap, &x));
+	printf("get: %u(pt)\n", (unsigned)get_cuckoo_hashmap(hashmap, &x));
 	destroy_cuckoo_hashmap(hashmap);
 
 	TTF_Font * testFont = TTF_OpenFont(DEFAULT_FONT_PATH, 32);
