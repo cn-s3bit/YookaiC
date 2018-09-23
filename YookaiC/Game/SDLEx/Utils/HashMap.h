@@ -25,15 +25,18 @@ typedef struct CuckooHashMap {
 
 	int(*HashFunc) (void * key);
 	int(*EqualFunc) (void * key1, void * key2);
+
+	int AutoFreeWhenRemove;
 } CuckooHashMap;
 
 /// Create an empty Hashmap.
-/// Use SDLEX_DEBUG_OUTPUT to print messages when invalid paramters are sent.
 CuckooHashMap * create_cuckoo_hashmap();
 
+/// Create an empty Hashmap that pointers inside are automatically freed when destroy/removed.
+CuckooHashMap * create_autofree_cuckoo_hashmap();
+
 /// Create an empty Hashmap with the given parameters.
-/// Use SDLEX_DEBUG_OUTPUT to print messages when invalid paramters are sent.
-CuckooHashMap * create_cuckoo_hashmap_p(int initialCapacity, float loadFactor, int(*hash_func) (void * key), int(*equal_func) (void * key1, void * key2));
+CuckooHashMap * create_cuckoo_hashmap_p(int initialCapacity, float loadFactor, int autoFree, int(*hash_func) (void * key), int(*equal_func) (void * key1, void * key2));
 
 /// Destroy a Hashmap and release all resources related.
 void destroy_cuckoo_hashmap(CuckooHashMap * map_obj);
