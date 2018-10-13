@@ -174,6 +174,7 @@ static void _sdlex_fetch_scs_details(VkPhysicalDevice device) {
 
 	unsigned formatCount;
 	vkGetPhysicalDeviceSurfaceFormatsKHR(device, VulkanSurface, &formatCount, NULL);
+	_sdlex_scs_details.formatCount = formatCount;
 	if (formatCount != 0) {
 		_sdlex_scs_details.formats = malloc(sizeof(VkSurfaceFormatKHR) * formatCount);
 		vkGetPhysicalDeviceSurfaceFormatsKHR(device, VulkanSurface, &formatCount, _sdlex_scs_details.formats);
@@ -181,6 +182,7 @@ static void _sdlex_fetch_scs_details(VkPhysicalDevice device) {
 
 	unsigned presentModeCount;
 	vkGetPhysicalDeviceSurfacePresentModesKHR(device, VulkanSurface, &presentModeCount, NULL);
+	_sdlex_scs_details.presentModeCount = presentModeCount;
 	if (presentModeCount > 0) {
 		_sdlex_scs_details.presentModes = malloc(sizeof(VkPresentModeKHR) * presentModeCount);
 		vkGetPhysicalDeviceSurfacePresentModesKHR(device, VulkanSurface, &presentModeCount, _sdlex_scs_details.presentModes);
@@ -188,15 +190,39 @@ static void _sdlex_fetch_scs_details(VkPhysicalDevice device) {
 }
 
 static void _sdlex_vulkan_create_swap_chain(SDL_Window * window) {
-	VkSurfaceFormatKHR surfaceFormat = {
-		.format = VK_FORMAT_B8G8R8A8_UNORM,
-		.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
-	};
 	VkSurfaceCapabilitiesKHR capabilities;
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanPhysicalDevice, VulkanSurface, &capabilities);
+
 	_sdlex_fetch_scs_details(VulkanPhysicalDevice);
-	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
-	// TODO: Pick Supported
+	VkPresentModeKHR presentMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
+	for (unsigned i = 0; i < _sdlex_scs_details.presentModeCount; i++) {
+		if (_sdlex_scs_details.presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
+			presentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+			SDL_Log("The Device Supports VK_PRESENT_MODE_MAILBOX_KHR.");
+			break;
+		} else if (_sdlex_scs_details.presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+			presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+		}
+	}
+	if (presentMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
+		presentMode = _sdlex_scs_details.presentModes[0];
+
+	VkSurfaceFormatKHR surfaceFormat = {
+		.format = VK_FORMAT_UNDEFINED,
+		.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
+	};
+	if (!(_sdlex_scs_details.formatCount == 1 && _sdlex_scs_details.formats[0].format == VK_FORMAT_UNDEFINED)) {
+		surfaceFormat.format = VK_FORMAT_B8G8R8A8_UNORM;
+		surfaceFormat.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+	}
+	for (unsigned i = 0; i < _sdlex_scs_details.formatCount; i++) {
+		VkSurfaceFormatKHR availableFormat = _sdlex_scs_details.formats[i];
+		if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+			surfaceFormat = availableFormat;
+		}
+	}
+	if (surfaceFormat.format == VK_FORMAT_UNDEFINED)
+		surfaceFormat = _sdlex_scs_details.formats[0];
 
 	VkExtent2D extent;
 	if (capabilities.currentExtent.width != SDL_MAX_UINT32) {

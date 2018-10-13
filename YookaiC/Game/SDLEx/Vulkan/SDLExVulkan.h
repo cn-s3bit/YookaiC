@@ -25,6 +25,7 @@ typedef struct Vertex {
 } Vertex;
 
 typedef struct SwapChainSupportDetails {
+	unsigned formatCount, presentModeCount;
 	VkSurfaceFormatKHR * formats;
 	VkPresentModeKHR * presentModes;
 } SwapChainSupportDetails;
