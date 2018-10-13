@@ -1,5 +1,5 @@
 #include "FileUtils.h"
-#include "SDLWithPlugins.h"
+#include "../SDLWithPlugins.h"
 
 char * read_file_to_char_array(const char * filename, size_t * size_out) {
 	SDL_RWops * fp = SDL_RWFromFile(filename, "rb");
