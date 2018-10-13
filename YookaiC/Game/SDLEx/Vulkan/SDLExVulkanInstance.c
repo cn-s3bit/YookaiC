@@ -53,6 +53,9 @@ int find_queue_families(VkPhysicalDevice device, int required_flag_bit) {
 	return -1;
 }
 
+static SwapChainSupportDetails _sdlex_scs_details;
+static void _sdlex_fetch_scs_details(VkPhysicalDevice device);
+
 static SDL_bool _sdlex_vulkan_check_device_extension_support(VkPhysicalDevice device) {
 	unsigned extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, NULL, &extensionCount, NULL);
@@ -68,6 +71,19 @@ static SDL_bool _sdlex_vulkan_check_device_extension_support(VkPhysicalDevice de
 	}
 
 	free(availableExtensions);
+
+	_sdlex_fetch_scs_details(device);
+
+	if (_sdlex_scs_details.formats == NULL || _sdlex_scs_details.presentModes == NULL)
+		return SDL_FALSE;
+
+	VkBool32 sup;
+	vkGetPhysicalDeviceSurfaceSupportKHR(device,
+		find_queue_families(device, VK_QUEUE_GRAPHICS_BIT),
+		VulkanSurface, &sup);
+
+	if (!sup)
+		return SDL_FALSE;
 
 	return got == 1 ? SDL_TRUE : SDL_FALSE;
 }
@@ -150,14 +166,38 @@ static void _sdlex_vulkan_create_virtual_device(void) {
 
 }
 
+static void _sdlex_fetch_scs_details(VkPhysicalDevice device) {
+	free(_sdlex_scs_details.formats);
+	_sdlex_scs_details.formats = NULL;
+	free(_sdlex_scs_details.presentModes);
+	_sdlex_scs_details.presentModes = NULL;
+
+	unsigned formatCount;
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, VulkanSurface, &formatCount, NULL);
+	if (formatCount != 0) {
+		_sdlex_scs_details.formats = malloc(sizeof(VkSurfaceFormatKHR) * formatCount);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, VulkanSurface, &formatCount, _sdlex_scs_details.formats);
+	}
+
+	unsigned presentModeCount;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, VulkanSurface, &presentModeCount, NULL);
+	if (presentModeCount > 0) {
+		_sdlex_scs_details.presentModes = malloc(sizeof(VkPresentModeKHR) * presentModeCount);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, VulkanSurface, &presentModeCount, _sdlex_scs_details.presentModes);
+	}
+}
+
 static void _sdlex_vulkan_create_swap_chain(SDL_Window * window) {
 	VkSurfaceFormatKHR surfaceFormat = {
 		.format = VK_FORMAT_B8G8R8A8_UNORM,
 		.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
 	};
-	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
 	VkSurfaceCapabilitiesKHR capabilities;
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanPhysicalDevice, VulkanSurface, &capabilities);
+	_sdlex_fetch_scs_details(VulkanPhysicalDevice);
+	VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
+	// TODO: Pick Supported
+
 	VkExtent2D extent;
 	if (capabilities.currentExtent.width != SDL_MAX_UINT32) {
 		extent = capabilities.currentExtent;
@@ -191,7 +231,7 @@ static void _sdlex_vulkan_create_swap_chain(SDL_Window * window) {
 	createInfo.preTransform = capabilities.currentTransform;
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
-	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR;
+	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
 	int ret = vkCreateSwapchainKHR(VulkanVirualDevice, &createInfo, NULL, &VulkanSwapChain.SwapChain);
 	if (ret != VK_SUCCESS) {
@@ -258,7 +298,8 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
 	appInfo.pEngineName = "SDLExVulkan";
 
 	VkInstanceCreateInfo createInfo = {
-		.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
+		.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+		.flags = 0
 	};
 	createInfo.enabledExtensionCount = count;
 	createInfo.ppEnabledExtensionNames = extensions;
@@ -279,9 +320,6 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
 		);
 
 	free(extensions);
-
-	_sdlex_vulkan_pick_physical_device();
-	_sdlex_vulkan_create_virtual_device();
 	
 	if (!SDL_Vulkan_CreateSurface(window, VulkanInstance, &VulkanSurface))
 		SDL_LogError(SDL_LOG_CATEGORY_CUSTOM,
@@ -289,14 +327,8 @@ VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer) {
 			SDL_GetError()
 		);
 
-	VkBool32 sup;
-	vkGetPhysicalDeviceSurfaceSupportKHR(VulkanPhysicalDevice,
-		find_queue_families(VulkanPhysicalDevice, VK_QUEUE_GRAPHICS_BIT),
-		VulkanSurface, &sup);
-	if (!sup) {
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-			"Device Seems Not Supporting SDL Surface");
-	}
+	_sdlex_vulkan_pick_physical_device();
+	_sdlex_vulkan_create_virtual_device();
 
 	_sdlex_vulkan_create_swap_chain(window);
 	create_command_buffer(&VulkanSwapChain);

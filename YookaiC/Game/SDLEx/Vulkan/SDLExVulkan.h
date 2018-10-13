@@ -24,6 +24,11 @@ typedef struct Vertex {
 	Vector3 Color;
 } Vertex;
 
+typedef struct SwapChainSupportDetails {
+	VkSurfaceFormatKHR * formats;
+	VkPresentModeKHR * presentModes;
+} SwapChainSupportDetails;
+
 VkInstance get_vk_instance(void);
 VkSurfaceKHR get_vk_surface(void);
 VkInstance initialize_vulkan(SDL_Window * window, unsigned appVer);

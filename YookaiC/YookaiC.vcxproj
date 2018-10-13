@@ -88,7 +88,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);SDLEX_VK_VALIDATION</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;D:\VulkanSDK\1.1.82.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
