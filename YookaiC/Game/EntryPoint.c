@@ -2,7 +2,6 @@
 #include <time.h>
 #include <stdlib.h>
 #include "SDLEx/SDLWithPlugins.h"
-#include "SDLEx/Utils/RenderUtils.h"
 #include "SDLEx/Utils/MathUtils.h"
 #include "SDLEx/MathEx/MathEx.h"
 #include "Constants.h"

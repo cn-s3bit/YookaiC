@@ -307,9 +307,6 @@
     <ClInclude Include="Game\SDLEx\MathEx\Vector3.h">
       <Filter>源文件\Game\SDLEx\MathEx</Filter>
     </ClInclude>
-    <ClInclude Include="Game\SDLEx\Utils\RenderUtils.h">
-      <Filter>源文件\Game\SDLEx\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Game\SDLEx\Utils\FileUtils.h">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClInclude>
@@ -343,9 +340,6 @@
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Utils\FileUtils.c">
-      <Filter>源文件\Game\SDLEx\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\SDLEx\Utils\RenderUtils.c">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Utils\HashMap.c">
