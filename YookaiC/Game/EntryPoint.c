@@ -34,18 +34,7 @@ int handle_event(void) {
 
 extern void sdlex_test_render(SDLExVulkanSwapChain * swapchain);
 extern void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline);
-int my_hash_int(void * pt) {
-	return *((int *)pt);
-}
 
-int my_equal_int(void * pt1, void * pt2) {
-	if (pt1 == NULL && pt2 != NULL)
-		return 0;
-	if (pt1 != NULL && pt2 == NULL)
-		return 0;
-	return (*((int *)pt1)) == (*((int *)pt2));
-}
-CODEGEN_CUCKOO_HASHMAP(intintmap, int, int, my_hash_int, my_equal_int, free)
 int main(int argc, char ** argv) {
 	if (argc > 0)
 		SDL_Log("Working Path: %s\n", argv[0]);
@@ -63,18 +52,12 @@ int main(int argc, char ** argv) {
 	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert.spv", RESOURCE_FOLDER "Shaders/default.frag.spv");
 
 	sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
-	
 	// Main Loop
 	while (1) {
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
 		clock_t b = clock();
 		sdlex_test_render(get_vk_swap_chain());
-		CuckooHashMap * wrapped = create_intintmap();
-		for (int i = 0; i < 1000000; i++) {
-			put_intintmap(wrapped, rand(), rand());
-		}
-		destroy_cuckoo_hashmap(wrapped);
 		SDL_Log("%d", clock() - b);
 		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);

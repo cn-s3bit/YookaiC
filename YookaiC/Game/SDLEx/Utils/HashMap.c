@@ -422,11 +422,11 @@ void destroy_cuckoo_hashmap(CuckooHashMap * map_obj) {
 	free(map_obj);
 }
 
-int _sdlex_hash_int(void * pt) {
+int sdlex_hash_int(void * pt) {
 	return *((int *) pt);
 }
 
-int _sdlex_equal_int(void * pt1, void * pt2) {
+int sdlex_equal_int(void * pt1, void * pt2) {
 	if (pt1 == NULL && pt2 != NULL)
 		return 0;
 	if (pt1 != NULL && pt2 == NULL)
@@ -435,7 +435,7 @@ int _sdlex_equal_int(void * pt1, void * pt2) {
 }
 
 IntIntCuckooHashMap * create_intint_cuckoo_hashmap() {
-	return create_cuckoo_hashmap_p(DEFAULT_SIZE, DEFAULT_LOAD_FACTOR, 1, _sdlex_hash_int, _sdlex_equal_int, NULL);
+	return create_cuckoo_hashmap_p(DEFAULT_SIZE, DEFAULT_LOAD_FACTOR, 1, sdlex_hash_int, sdlex_equal_int, NULL);
 }
 
 void put_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key, int value) {

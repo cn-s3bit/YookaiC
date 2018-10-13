@@ -60,6 +60,8 @@ IntIntCuckooHashMap * create_intint_cuckoo_hashmap();
 void put_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key, int value);
 int get_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
+int sdlex_hash_int(void * pt);
+int sdlex_equal_int(void * pt1, void * pt2);
 
 #define CODEGEN_HASHMAP_DEFAULT_HASHFUNC(FUNCNAME, KEYTYPE) \
 	static int FUNCNAME(void * key) {\
@@ -79,7 +81,7 @@ int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 		return memcmp(pt1, pt2, sizeof(KEYTYPE)) == 0;\
 	}
 
-#define CODEGEN_CUCKOO_HASHMAP(POSTFIX, KEYTYPE, VALUETYPE, HASH_FUNC, EQUAL_FUNC, FREE_KEY_FUNC) \
+#define CODEGEN_CUCKOO_HASHMAP(POSTFIX, KEYTYPE, VALUETYPE, HASH_FUNC, EQUAL_FUNC, FREE_KEY_FUNC, FREE_VALUE_FUNC) \
 	static CuckooHashMap * create_##POSTFIX() {\
 		return create_cuckoo_hashmap_p(DEFAULT_SIZE, DEFAULT_LOAD_FACTOR, 1, HASH_FUNC, EQUAL_FUNC, FREE_KEY_FUNC);\
 	}\
@@ -91,7 +93,7 @@ int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 		*pvalue = value;\
 		VALUETYPE * fetched = put_cuckoo_hashmap(map_obj, pkey, pvalue);\
 		if (fetched) {\
-			free(fetched);\
+			FREE_VALUE_FUNC(fetched);\
 		}\
 	}\
 \
@@ -109,7 +111,7 @@ int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 		VALUETYPE * fetched = remove_from_cuckoo_hashmap(map_obj, pkey);\
 		FREE_KEY_FUNC(pkey);\
 		VALUETYPE result = *fetched;\
-		free(fetched);\
+		FREE_VALUE_FUNC(fetched);\
 		return result;\
 	}
 #endif
