@@ -458,6 +458,7 @@ int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key) {
 	*pkey = key;
 	int * fetched = remove_from_cuckoo_hashmap(map_obj, pkey);
 	free(pkey);
+	int result = *fetched;
 	free(fetched);
-	return *fetched;
+	return result;
 }
