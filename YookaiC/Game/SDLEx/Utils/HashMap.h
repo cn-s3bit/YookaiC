@@ -1,5 +1,6 @@
 #ifndef SDLEX_HASHMAP_H
 #define SDLEX_HASHMAP_H
+#include <string.h>
 
 #define PRIME1 0xbe1f14b1
 #define PRIME2 0xb4b82e39
@@ -25,6 +26,7 @@ typedef struct CuckooHashMap {
 
 	int(*HashFunc) (void * key);
 	int(*EqualFunc) (void * key1, void * key2);
+	void(*FreeKeyFunc) (void * key);
 
 	int AutoFreeWhenRemove;
 } CuckooHashMap;
@@ -36,7 +38,7 @@ CuckooHashMap * create_cuckoo_hashmap();
 CuckooHashMap * create_autofree_cuckoo_hashmap();
 
 /// Create an empty Hashmap with the given parameters.
-CuckooHashMap * create_cuckoo_hashmap_p(int initialCapacity, float loadFactor, int autoFree, int(*hash_func) (void * key), int(*equal_func) (void * key1, void * key2));
+CuckooHashMap * create_cuckoo_hashmap_p(int initialCapacity, float loadFactor, int autoFree, int(*hash_func) (void * key), int(*equal_func) (void * key1, void * key2), void(*free_key_func) (void * key));
 
 /// Destroy a Hashmap and release all resources related.
 void destroy_cuckoo_hashmap(CuckooHashMap * map_obj);
@@ -58,4 +60,56 @@ IntIntCuckooHashMap * create_intint_cuckoo_hashmap();
 void put_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key, int value);
 int get_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
+
+#define CODEGEN_DEFAULT_HASHFUNC(FUNCNAME, KEYTYPE) \
+	static int FUNCNAME(void * key) {\
+		int hash = 0;\
+		for (unsigned i = 0; i < sizeof(KEYTYPE); i++) {\
+			hash = hash * 31 + (*(((char *)key) + i))\
+		}\
+		return hash;\
+	}
+
+#define CODEGEN_DEFAULT_EQUALFUNC(FUNCNAME, KEYTYPE) \
+	static int FUNCNAME(void * pt1, void * pt2) {\
+		if (pt1 == NULL && pt2 != NULL)\
+			return 0;\
+		if (pt1 != NULL && pt2 == NULL)\
+			return 0;\
+		return memcmp(pt1, pt2, sizeof(KEYTYPE)) == 0;\
+	}
+
+#define CODEGEN_CUCKOO_HASHMAP(POSTFIX, KEYTYPE, VALUETYPE, HASH_FUNC, EQUAL_FUNC, FREE_KEY_FUNC) \
+	static CuckooHashMap * create_##POSTFIX() {\
+		return create_cuckoo_hashmap_p(DEFAULT_SIZE, DEFAULT_LOAD_FACTOR, 1, HASH_FUNC, EQUAL_FUNC, FREE_KEY_FUNC);\
+	}\
+\
+	static void put_##POSTFIX(CuckooHashMap * map_obj, KEYTYPE key, VALUETYPE value) {\
+		KEYTYPE * pkey = malloc(sizeof(KEYTYPE));\
+		VALUETYPE * pvalue = malloc(sizeof(VALUETYPE));\
+		*pkey = key;\
+		*pvalue = value;\
+		VALUETYPE * fetched = put_cuckoo_hashmap(map_obj, pkey, pvalue);\
+		if (fetched) {\
+			free(fetched);\
+		}\
+	}\
+\
+	static VALUETYPE get_##POSTFIX(CuckooHashMap * map_obj, KEYTYPE key) {\
+		KEYTYPE * pkey = malloc(sizeof(int));\
+		*pkey = key;\
+		VALUETYPE * fetched = get_cuckoo_hashmap(map_obj, pkey);\
+		FREE_KEY_FUNC(pkey);\
+		return *fetched;\
+	}\
+\
+	static VALUETYPE remove_from_##POSTFIX(CuckooHashMap * map_obj, KEYTYPE key) {\
+		KEYTYPE * pkey = malloc(sizeof(int));\
+		*pkey = key;\
+		VALUETYPE * fetched = remove_from_cuckoo_hashmap(map_obj, pkey);\
+		FREE_KEY_FUNC(pkey);\
+		VALUETYPE result = *fetched;\
+		free(fetched);\
+		return result;\
+	}
 #endif
