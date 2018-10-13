@@ -152,7 +152,6 @@
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />
     <ClInclude Include="Game\SDLEx\Utils\FileUtils.h" />
     <ClInclude Include="Game\SDLEx\Utils\HashMap.h" />
-    <ClInclude Include="Game\SDLEx\Utils\ImageUtils.h" />
     <ClInclude Include="Game\SDLEx\Utils\MathUtils.h" />
     <ClInclude Include="Game\SDLEx\Utils\RenderUtils.h" />
     <ClInclude Include="Game\SDLEx\Vulkan\SDLExVulkan.h" />
@@ -246,13 +245,13 @@
     <ClCompile Include="Game\EntryPoint.c" />
     <ClCompile Include="Game\SDLEx\Utils\FileUtils.c" />
     <ClCompile Include="Game\SDLEx\Utils\HashMap.c" />
-    <ClCompile Include="Game\SDLEx\Utils\ImageUtils.c" />
     <ClCompile Include="Game\SDLEx\Utils\RenderUtils.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanPipeline.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanRender.c" />
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanTexture2D.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanVertex.c" />
   </ItemGroup>
   <ItemGroup>

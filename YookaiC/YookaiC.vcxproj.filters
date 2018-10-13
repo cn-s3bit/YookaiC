@@ -313,9 +313,6 @@
     <ClInclude Include="Game\SDLEx\Utils\FileUtils.h">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Game\SDLEx\Utils\ImageUtils.h">
-      <Filter>源文件\Game\SDLEx\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Game\SDLEx\Utils\MathUtils.h">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClInclude>
@@ -348,14 +345,14 @@
     <ClCompile Include="Game\SDLEx\Utils\FileUtils.c">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Game\SDLEx\Utils\ImageUtils.c">
-      <Filter>源文件\Game\SDLEx\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Game\SDLEx\Utils\RenderUtils.c">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Utils\HashMap.c">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanTexture2D.c">
+      <Filter>源文件\Game\SDLEx\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

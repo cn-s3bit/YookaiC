@@ -62,7 +62,7 @@ void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryProperty
 
 void create_vertex_buffer(void) {
 	create_buffer(
-		sizeof(Vertex) * 3,
+		sizeof(Vertex) * 6,
 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		&VulkanVertexBuffer,
@@ -71,6 +71,7 @@ void create_vertex_buffer(void) {
 }
 
 void * request_vertex_buffer_memory(void) {
+	// TODO: Implement Staging Buffer
 	vkMapMemory(get_vk_device(), VulkanVertexBufferMemory, 0, sizeof(Vertex) * 3, 0, &SDLExVertexBufferMemory);
 	return SDLExVertexBufferMemory;
 }
