@@ -61,7 +61,7 @@ void put_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key, int value
 int get_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 
-#define CODEGEN_DEFAULT_HASHFUNC(FUNCNAME, KEYTYPE) \
+#define CODEGEN_HASHMAP_DEFAULT_HASHFUNC(FUNCNAME, KEYTYPE) \
 	static int FUNCNAME(void * key) {\
 		int hash = 0;\
 		for (unsigned i = 0; i < sizeof(KEYTYPE); i++) {\
@@ -70,7 +70,7 @@ int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 		return hash;\
 	}
 
-#define CODEGEN_DEFAULT_EQUALFUNC(FUNCNAME, KEYTYPE) \
+#define CODEGEN_HASHMAP_DEFAULT_EQUALFUNC(FUNCNAME, KEYTYPE) \
 	static int FUNCNAME(void * pt1, void * pt2) {\
 		if (pt1 == NULL && pt2 != NULL)\
 			return 0;\
