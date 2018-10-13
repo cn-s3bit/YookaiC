@@ -152,6 +152,8 @@ void _sdlex_hashmap_resize(CuckooHashMap * map_obj, int newSize) {
 			if (key != NULL) _sdlex_hashmap_putresize(map_obj, key, oldValueTable[i]);
 		}
 	}
+	free(oldKeyTable);
+	free(oldValueTable);
 }
 
 inline void _sdlex_hashmap_putstash(CuckooHashMap * map_obj, void * key, void * value) {
