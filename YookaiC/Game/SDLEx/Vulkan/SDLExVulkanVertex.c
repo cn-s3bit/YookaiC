@@ -8,14 +8,14 @@ VkBuffer get_vk_vertex_buffer(void) {
 	return VulkanVertexBuffer;
 }
 
-void create_vertex_buffer(void) {
+void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer * out_buffer, VkDeviceMemory * out_memory) {
 	VkBufferCreateInfo bufferInfo = { .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
-	bufferInfo.size = sizeof(Vertex) * 3;
-	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	bufferInfo.size = size;
+	bufferInfo.usage = usage;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 	int ret;
-	ret = vkCreateBuffer(get_vk_device(), &bufferInfo, NULL, &VulkanVertexBuffer);
+	ret = vkCreateBuffer(get_vk_device(), &bufferInfo, NULL, out_buffer);
 	if (ret != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
 			"Failed to Create Vertex Buffer: vkCreateBuffer returns %d", ret);
@@ -23,12 +23,11 @@ void create_vertex_buffer(void) {
 	}
 
 	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(get_vk_device(), VulkanVertexBuffer, &memRequirements);
+	vkGetBufferMemoryRequirements(get_vk_device(), *out_buffer, &memRequirements);
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(get_vk_physical_device(), &memProperties);
 
 	unsigned typeFilter = memRequirements.memoryTypeBits;
-	VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 	unsigned found = SDL_MAX_UINT32;
 	for (unsigned i = 0; i < memProperties.memoryTypeCount; i++) {
@@ -37,7 +36,7 @@ void create_vertex_buffer(void) {
 			break;
 		}
 	}
-	
+
 	if (found == SDL_MAX_UINT32) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Find Suitable Memory Type!");
 		return;
@@ -47,18 +46,28 @@ void create_vertex_buffer(void) {
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex = found;
 
-	ret = vkAllocateMemory(get_vk_device(), &allocInfo, NULL, &VulkanVertexBufferMemory);
+	ret = vkAllocateMemory(get_vk_device(), &allocInfo, NULL, out_memory);
 	if (ret != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
 			"Failed to Allocate Vertex Buffer Memory: vkAllocateMemory returns %d", ret);
 		return;
 	}
 
-	vkBindBufferMemory(get_vk_device(), VulkanVertexBuffer, VulkanVertexBufferMemory, 0);
+	vkBindBufferMemory(get_vk_device(), *out_buffer, *out_memory, 0);
 
 	SDL_Log("Created Vertex Buffer at %u with VRAM at %u",
-		(unsigned)VulkanVertexBuffer,
-		(unsigned)VulkanVertexBufferMemory);
+		(unsigned)*out_buffer,
+		(unsigned)*out_memory);
+}
+
+void create_vertex_buffer(void) {
+	create_buffer(
+		sizeof(Vertex) * 3,
+		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+		&VulkanVertexBuffer,
+		&VulkanVertexBufferMemory
+	);
 }
 
 void * request_vertex_buffer_memory(void) {

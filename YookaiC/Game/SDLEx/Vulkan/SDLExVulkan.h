@@ -53,6 +53,7 @@ void cleanup_frame_buffers(SDLExVulkanSwapChain * pSwapChain, SDLExVulkanGraphic
 VkCommandPool create_command_buffer(SDLExVulkanSwapChain * pSwapChain);
 void cleanup_command_buffer(SDLExVulkanSwapChain * pSwapChain);
 
+void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer * out_buffer, VkDeviceMemory * out_memory);
 void create_vertex_buffer(void);
 void cleanup_vertex_buffer(void);
 VkBuffer get_vk_vertex_buffer(void);
