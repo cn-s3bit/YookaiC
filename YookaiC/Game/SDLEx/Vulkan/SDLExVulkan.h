@@ -62,6 +62,8 @@ void flush_vertex_buffer_memory(void);
 
 SDL_Rect texture_frame(SDL_Texture * texture);
 void create_image(unsigned width, unsigned height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage * image, VkDeviceMemory * imageMemory);
+VkImageView create_image_view(VkImage image, VkFormat format);
+int load_texture2d(const char * filename);
 
 inline VkVertexInputBindingDescription _sdlex_get_binding_description(void) {
 	VkVertexInputBindingDescription bindingDescription;
