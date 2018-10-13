@@ -417,3 +417,47 @@ void destroy_cuckoo_hashmap(CuckooHashMap * map_obj) {
 	free(map_obj->_valueTable);
 	free(map_obj);
 }
+
+inline int _sdlex_hash_int(void * pt) {
+	return *((int *) pt);
+}
+
+inline int _sdlex_equal_int(void * pt1, void * pt2) {
+	if (pt1 == NULL && pt2 != NULL)
+		return 0;
+	if (pt1 != NULL && pt2 == NULL)
+		return 0;
+	return (*((int *)pt1)) == (*((int *)pt2));
+}
+
+IntIntCuckooHashMap * create_intint_cuckoo_hashmap() {
+	return create_cuckoo_hashmap_p(DEFAULT_SIZE, DEFAULT_LOAD_FACTOR, 1, _sdlex_hash_int, _sdlex_equal_int);
+}
+
+void put_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key, int value) {
+	int * pkey = malloc(sizeof(int));
+	int * pvalue = malloc(sizeof(int));
+	*pkey = key;
+	*pvalue = value;
+	int * fetched = put_cuckoo_hashmap(map_obj, pkey, pvalue);
+	if (fetched) {
+		free(fetched);
+	}
+}
+
+int get_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key) {
+	int * pkey = malloc(sizeof(int));
+	*pkey = key;
+	int * fetched = get_cuckoo_hashmap(map_obj, pkey);
+	free(pkey);
+	return *fetched;
+}
+
+int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key) {
+	int * pkey = malloc(sizeof(int));
+	*pkey = key;
+	int * fetched = remove_from_cuckoo_hashmap(map_obj, pkey);
+	free(pkey);
+	free(fetched);
+	return *fetched;
+}

@@ -45,25 +45,12 @@ int main(int argc, char ** argv) {
 	SDL_Texture * testTexture = load_texture(renderer, RESOURCE_FOLDER "Image/Ming/Ming.png");*/
 	vector2_log_output(vector2_add(vector2_one(), vector2_one()), "test");
 
-	CuckooHashMap * hashmap = create_cuckoo_hashmap();
-	int x = 0;
-	int y = 1;
-	int z = 2;
-	put_cuckoo_hashmap(hashmap, &x, &y);
-	printf("get: %d\n", *(int *)get_cuckoo_hashmap(hashmap, &x));
-	printf("replace: %d\n", *(int *)put_cuckoo_hashmap(hashmap, &x, &z));
-	printf("get: %d\n", *(int *)get_cuckoo_hashmap(hashmap, &x));
-	printf("remove: %d\n", *(int *)remove_from_cuckoo_hashmap(hashmap, &x));
-	printf("get: %u(pt)\n", (unsigned)get_cuckoo_hashmap(hashmap, &x));
-	destroy_cuckoo_hashmap(hashmap);
-
 	TTF_Font * testFont = TTF_OpenFont(DEFAULT_FONT_PATH, 32);
 
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
 	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert.spv", RESOURCE_FOLDER "Shaders/default.frag.spv");
 
 	sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
-
 	// Main Loop
 	while (1) {
 		if (handle_event() == EXIT_SIGNAL)

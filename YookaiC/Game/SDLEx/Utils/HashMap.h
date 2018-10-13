@@ -51,4 +51,11 @@ void * put_cuckoo_hashmap(CuckooHashMap * map_obj, void * key, void * value);
 /// Remove the entry specified by @param key.
 /// @returns The value of the key in the map, or NULL if key does not exist.
 void * remove_from_cuckoo_hashmap(CuckooHashMap * map_obj, void * key);
+
+typedef CuckooHashMap IntIntCuckooHashMap;
+
+IntIntCuckooHashMap * create_intint_cuckoo_hashmap();
+void put_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key, int value);
+int get_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
+int remove_from_intint_cuckoo_hashmap(IntIntCuckooHashMap * map_obj, int key);
 #endif
