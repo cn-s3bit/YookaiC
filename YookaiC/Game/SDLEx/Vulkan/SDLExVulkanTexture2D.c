@@ -238,6 +238,7 @@ int load_texture2d(const char * filename) {
 	put_texmemorymap(texture_memories, next_image_id, textureImageMemory);
 	put_texviewmap(texture_views, next_image_id, textureImageView);
 	put_texsamplermap(texture_samplers, next_image_id, textureSampler);
+	// TODO: Disposal
 
 	SDL_FreeSurface(raw);
 	vkDestroyBuffer(get_vk_device(), stagingBuffer, NULL);
