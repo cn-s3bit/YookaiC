@@ -31,7 +31,6 @@ int handle_event(void) {
 	return NO_SIGNAL;
 }
 
-extern void sdlex_test_render(SDLExVulkanSwapChain * swapchain);
 extern void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline);
 
 int main(int argc, char ** argv) {
@@ -57,8 +56,10 @@ int main(int argc, char ** argv) {
 			goto LABEL_EXIT;
 		clock_t b = clock();
 		sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
-		sdlex_test_render(get_vk_swap_chain());
-		SDL_Log("%d", clock() - b);
+		unsigned imageid = sdlex_begin_frame();
+		SDL_Rect p = { 0, 0, 0, 0 };
+		sdlex_render_texture(imageid, texture_id, p);
+		sdlex_end_frame(imageid);
 		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);
 		draw_texture(renderer, testTexture, new_sdl_point(250, 50));

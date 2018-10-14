@@ -11,47 +11,63 @@ Vertex Vertices[6] = {
 	{ { 0.9f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
 };
 
-void sdlex_test_render(SDLExVulkanSwapChain * swapchain) {
-	// First Update Logic!
+VkSemaphore imageAvailableSemaphore;
+VkSemaphore lastSemaphore = VK_NULL_HANDLE;
+VkSemaphore nextSemaphore = VK_NULL_HANDLE;
+
+unsigned sdlex_begin_frame() {
+	VkDevice device = get_vk_device();
+	const SDLExVulkanSwapChain const * swapchain = get_vk_swap_chain();
+	VkSemaphoreCreateInfo semaphoreInfo = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore(device, &semaphoreInfo, NULL, &imageAvailableSemaphore);
+	unsigned imageIndex;
+	vkAcquireNextImageKHR(device, swapchain->SwapChain, SDL_MAX_SINT32,
+		imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	nextSemaphore = imageAvailableSemaphore;
+	return imageIndex;
+}
+
+void sdlex_render_texture(unsigned imageIndex, int texture_id, SDL_Rect target) {
 	void * addr = request_vertex_buffer_memory();
 	SDL_memcpy(addr, Vertices, sizeof(Vertices));
 	flush_vertex_buffer_memory();
 
-	VkDevice device = get_vk_device();
-	VkSemaphore imageAvailableSemaphore;
-	VkSemaphore renderFinishedSemaphore;
-	VkSemaphoreCreateInfo semaphoreInfo = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-	if (vkCreateSemaphore(device, &semaphoreInfo, NULL, &imageAvailableSemaphore) != VK_SUCCESS ||
-		vkCreateSemaphore(device, &semaphoreInfo, NULL, &renderFinishedSemaphore) != VK_SUCCESS) {
-		return;
-	}
-
-	unsigned imageIndex;
-	vkAcquireNextImageKHR(device, swapchain->SwapChain, SDL_MAX_SINT32,
-		imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
-	
 	VkSubmitInfo submitInfo = { .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO };
 
-	VkSemaphore * waitSemaphores = &imageAvailableSemaphore;
-	VkPipelineStageFlags waitStages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = waitSemaphores;
-	submitInfo.pWaitDstStageMask = &waitStages;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &swapchain->CommandBuffers[imageIndex];
-	VkSemaphore * signalSemaphores = &renderFinishedSemaphore;
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = signalSemaphores;
-	int ret = vkQueueSubmit(get_vk_queue(), 1, &submitInfo, VK_NULL_HANDLE);
-	if (ret != VK_SUCCESS) {
-		return;
+	if (lastSemaphore != VK_NULL_HANDLE) {
+		vkDestroySemaphore(get_vk_device(), lastSemaphore, NULL);
+	}
+	if (nextSemaphore != VK_NULL_HANDLE) {
+		lastSemaphore = nextSemaphore;
+		VkSemaphore * waitSemaphores = &lastSemaphore;
+		submitInfo.waitSemaphoreCount = 1;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		VkSemaphoreCreateInfo semaphoreInfo = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+		vkCreateSemaphore(get_vk_device(), &semaphoreInfo, NULL, &nextSemaphore);
 	}
 
+	VkPipelineStageFlags waitStages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	submitInfo.pWaitDstStageMask = &waitStages;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &get_vk_swap_chain()->CommandBuffers[imageIndex];
+	VkSemaphore * signalSemaphores = &nextSemaphore;
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+	vkQueueSubmit(get_vk_queue(), 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(get_vk_queue());
+}
+
+void sdlex_end_frame(unsigned imageIndex) {
 	VkPresentInfoKHR presentInfo = { .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
 
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = signalSemaphores;
-	VkSwapchainKHR * swapChains = &swapchain->SwapChain;
+	if (nextSemaphore == VK_NULL_HANDLE) {
+		presentInfo.waitSemaphoreCount = 0;
+	}
+	else {
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = &nextSemaphore;
+	}
+	VkSwapchainKHR * swapChains = &get_vk_swap_chain()->SwapChain;
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
@@ -59,8 +75,7 @@ void sdlex_test_render(SDLExVulkanSwapChain * swapchain) {
 	vkQueuePresentKHR(get_vk_queue(), &presentInfo);
 	vkQueueWaitIdle(get_vk_queue());
 
-	vkDestroySemaphore(device, renderFinishedSemaphore, NULL);
-	vkDestroySemaphore(device, imageAvailableSemaphore, NULL);
+	vkDestroySemaphore(get_vk_device(), nextSemaphore, NULL);
 }
 
 void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline) {
