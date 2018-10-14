@@ -78,7 +78,8 @@ void cleanup_descriptor_pool();
 void bind_texture(VkImageView textureImageView, VkSampler textureSampler);
 
 unsigned sdlex_begin_frame();
-void sdlex_render_texture(unsigned imageIndex, int texture_id, SDL_Rect target);
+void sdlex_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline, int clear);
+void sdlex_render_texture(unsigned imageIndex, SDL_Rect target);
 void sdlex_end_frame(unsigned imageIndex);
 
 inline VkVertexInputBindingDescription _sdlex_get_binding_description(void) {

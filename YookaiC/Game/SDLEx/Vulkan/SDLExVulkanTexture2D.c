@@ -252,4 +252,5 @@ void bind_texture2d(int texture_id) {
 		return;
 	}
 	bind_texture(get_texviewmap(texture_views, texture_id), get_texsamplermap(texture_samplers, texture_id));
+	sdlex_render_init(get_vk_swap_chain(), get_vk_pipeline(), 0);
 }

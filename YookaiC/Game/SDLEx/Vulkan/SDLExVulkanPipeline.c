@@ -64,7 +64,7 @@ static void _sdlex_prepare_pipeline(void) {
 
 	VkAttachmentDescription colorAttachment = {
 		.samples = VK_SAMPLE_COUNT_1_BIT,
-		.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+		.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 		.storeOp = VK_ATTACHMENT_STORE_OP_STORE
 	};
 	colorAttachment.format = get_vk_swap_chain()->SwapChainInfo.imageFormat;

@@ -31,8 +31,6 @@ int handle_event(void) {
 	return NO_SIGNAL;
 }
 
-extern void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline);
-
 int main(int argc, char ** argv) {
 	if (argc > 0)
 		SDL_Log("Working Path: %s\n", argv[0]);
@@ -50,15 +48,23 @@ int main(int argc, char ** argv) {
 	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert.spv", RESOURCE_FOLDER "Shaders/default.frag.spv");
 	int texture_id = load_texture2d(RESOURCE_FOLDER "Game/Image/Ming/Ming.png");
 	bind_texture2d(texture_id);
+	int t = 0;
 	// Main Loop
 	while (1) {
+		t++;
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
 		clock_t b = clock();
-		sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
 		unsigned imageid = sdlex_begin_frame();
-		SDL_Rect p = { 0, 0, 0, 0 };
-		sdlex_render_texture(imageid, texture_id, p);
+		SDL_Rect p1 = { 0, 0, 200, 400 };
+		p1.x += t;
+		sdlex_render_texture(imageid, p1);
+		SDL_Rect p2 = { 200, 400, 200, 400 };
+		p2.x += t;
+		sdlex_render_texture(imageid, p2);
+		SDL_Rect p3 = { 100, 200, 200, 400 };
+		p3.x += t;
+		sdlex_render_texture(imageid, p3);
 		sdlex_end_frame(imageid);
 		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);

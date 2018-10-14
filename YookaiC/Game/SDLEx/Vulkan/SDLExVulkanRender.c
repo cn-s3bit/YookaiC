@@ -17,17 +17,30 @@ VkSemaphore nextSemaphore = VK_NULL_HANDLE;
 
 unsigned sdlex_begin_frame() {
 	VkDevice device = get_vk_device();
-	const SDLExVulkanSwapChain const * swapchain = get_vk_swap_chain();
+	SDLExVulkanSwapChain * swapchain = get_vk_swap_chain();
 	VkSemaphoreCreateInfo semaphoreInfo = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
 	vkCreateSemaphore(device, &semaphoreInfo, NULL, &imageAvailableSemaphore);
 	unsigned imageIndex;
 	vkAcquireNextImageKHR(device, swapchain->SwapChain, SDL_MAX_SINT32,
 		imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 	nextSemaphore = imageAvailableSemaphore;
+	sdlex_render_init(swapchain, get_vk_pipeline(), 1);
+	SDL_Rect emptyTarget = { 0, 0, 0, 0 };
+	sdlex_render_texture(imageIndex, emptyTarget);
+	sdlex_render_init(swapchain, get_vk_pipeline(), 0);
 	return imageIndex;
 }
 
-void sdlex_render_texture(unsigned imageIndex, int texture_id, SDL_Rect target) {
+void sdlex_render_texture(unsigned imageIndex, SDL_Rect target) {
+	VkExtent2D screenSize = get_vk_swap_chain()->SwapChainInfo.imageExtent;
+#define MAP_POS_TO_VIEWPORT_X(val) sdlex_map_float((float)val, 0.0f, (float)screenSize.width, -1.0f, 1.0f)
+#define MAP_POS_TO_VIEWPORT_Y(val) sdlex_map_float((float)val, 0.0f, (float)screenSize.height, -1.0f, 1.0f)
+	Vertices[0].Pos.X = Vertices[1].Pos.X = Vertices[3].Pos.X = MAP_POS_TO_VIEWPORT_X(target.x);
+	Vertices[2].Pos.X = Vertices[4].Pos.X = Vertices[5].Pos.X = MAP_POS_TO_VIEWPORT_X(target.x + target.w);
+	Vertices[0].Pos.Y = Vertices[3].Pos.Y = Vertices[4].Pos.Y = MAP_POS_TO_VIEWPORT_Y(target.y);
+	Vertices[1].Pos.Y = Vertices[2].Pos.Y = Vertices[5].Pos.Y = MAP_POS_TO_VIEWPORT_Y(target.y + target.h);
+#undef MAP_POS_TO_VIEWPORT_X
+#undef MAP_POS_TO_VIEWPORT_Y
 	void * addr = request_vertex_buffer_memory();
 	SDL_memcpy(addr, Vertices, sizeof(Vertices));
 	flush_vertex_buffer_memory();
@@ -59,7 +72,6 @@ void sdlex_render_texture(unsigned imageIndex, int texture_id, SDL_Rect target) 
 
 void sdlex_end_frame(unsigned imageIndex) {
 	VkPresentInfoKHR presentInfo = { .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
-
 	if (nextSemaphore == VK_NULL_HANDLE) {
 		presentInfo.waitSemaphoreCount = 0;
 	}
@@ -78,7 +90,7 @@ void sdlex_end_frame(unsigned imageIndex) {
 	vkDestroySemaphore(get_vk_device(), nextSemaphore, NULL);
 }
 
-void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline) {
+void sdlex_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline, int clear) {
 	for (size_t i = 0; i < swapchain->ImageCount; i++) {
 		VkCommandBufferBeginInfo beginInfo = { .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
 		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
@@ -103,12 +115,26 @@ void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphic
 
 		vkCmdBindPipeline(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->GraphicsPipeline);
 
-		VkBuffer buffer = get_vk_vertex_buffer();
-		VkDeviceSize offset = 0;
-		vkCmdBindVertexBuffers(swapchain->CommandBuffers[i], 0, 1, &buffer, &offset);
-		vkCmdBindDescriptorSets(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->PipelineLayout, 0, 1, &pipeline->DescriptorSets[i], 0, NULL);
-		vkCmdDraw(swapchain->CommandBuffers[i], 6, 1, 0, 0);
+		if (clear) {
+			VkClearAttachment clearatt;
+			clearatt.clearValue = clearColor;
+			clearatt.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			clearatt.colorAttachment = 0;
+			VkClearRect clearrect;
+			clearrect.baseArrayLayer = 0;
+			clearrect.layerCount = 1;
+			clearrect.rect.offset.x = clearrect.rect.offset.y = 0;
+			clearrect.rect.extent = swapchain->SwapChainInfo.imageExtent;
+			vkCmdClearAttachments(swapchain->CommandBuffers[i], 1, &clearatt, 1, &clearrect);
+		}
+		else {
+			VkBuffer buffer = get_vk_vertex_buffer();
+			VkDeviceSize offset = 0;
 
+			vkCmdBindVertexBuffers(swapchain->CommandBuffers[i], 0, 1, &buffer, &offset);
+			vkCmdBindDescriptorSets(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->PipelineLayout, 0, 1, &pipeline->DescriptorSets[i], 0, NULL);
+			vkCmdDraw(swapchain->CommandBuffers[i], 6, 1, 0, 0);
+		}
 		vkCmdEndRenderPass(swapchain->CommandBuffers[i]);
 		if ((ret = vkEndCommandBuffer(swapchain->CommandBuffers[i])) != VK_SUCCESS) {
 			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
