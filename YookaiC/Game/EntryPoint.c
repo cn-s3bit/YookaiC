@@ -56,8 +56,6 @@ int main(int argc, char ** argv) {
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
 		clock_t b = clock();
-		texture_id = load_texture2d(RESOURCE_FOLDER "Game/Image/Ming/Ming.png");
-		bind_texture2d(texture_id);
 		sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
 		sdlex_test_render(get_vk_swap_chain());
 		SDL_Log("%d", clock() - b);
