@@ -208,12 +208,12 @@ int load_texture2d(const char * filename) {
 		texture_samplers = create_texsamplermap();
 	}
 	SDL_Surface * raw = IMG_Load(filename);
-	VkDeviceSize imageSize = raw->w * raw->h * raw->format->BytesPerPixel;
-
 	if (!raw) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Load Texture2D: %s", SDL_GetError());
 		return -1;
 	}
+
+	VkDeviceSize imageSize = raw->w * raw->h * raw->format->BytesPerPixel;
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
