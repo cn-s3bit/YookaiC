@@ -12,8 +12,7 @@ Vertex Vertices[6] = {
 };
 
 VkSemaphore imageAvailableSemaphore;
-VkSemaphore lastSemaphore = VK_NULL_HANDLE;
-VkSemaphore nextSemaphore = VK_NULL_HANDLE;
+VkFence the_fence = VK_NULL_HANDLE;
 
 unsigned sdlex_begin_frame() {
 	VkDevice device = get_vk_device();
@@ -23,11 +22,21 @@ unsigned sdlex_begin_frame() {
 	unsigned imageIndex;
 	vkAcquireNextImageKHR(device, swapchain->SwapChain, SDL_MAX_SINT32,
 		imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
-	nextSemaphore = imageAvailableSemaphore;
 	sdlex_render_init(swapchain, get_vk_pipeline(), 1);
-	SDL_Rect emptyTarget = { 0, 0, 0, 0 };
-	sdlex_render_texture(imageIndex, emptyTarget);
+	VkSubmitInfo submitInfo = { .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO };
+	VkPipelineStageFlags waitStages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	submitInfo.pWaitDstStageMask = &waitStages;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &get_vk_swap_chain()->CommandBuffers[imageIndex];
+	submitInfo.pWaitSemaphores = &imageAvailableSemaphore;
+	submitInfo.waitSemaphoreCount = 1;
+	vkQueueSubmit(get_vk_queue(), 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(get_vk_queue());
+	vkDestroySemaphore(device, imageAvailableSemaphore, NULL);
 	sdlex_render_init(swapchain, get_vk_pipeline(), 0);
+
+	VkFenceCreateInfo ci = { .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
+	vkCreateFence(device, &ci, NULL, &the_fence);
 	return imageIndex;
 }
 
@@ -46,39 +55,17 @@ void sdlex_render_texture(unsigned imageIndex, SDL_Rect target) {
 	flush_vertex_buffer_memory();
 
 	VkSubmitInfo submitInfo = { .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO };
-
-	if (lastSemaphore != VK_NULL_HANDLE) {
-		vkDestroySemaphore(get_vk_device(), lastSemaphore, NULL);
-	}
-	if (nextSemaphore != VK_NULL_HANDLE) {
-		lastSemaphore = nextSemaphore;
-		VkSemaphore * waitSemaphores = &lastSemaphore;
-		submitInfo.waitSemaphoreCount = 1;
-		submitInfo.pWaitSemaphores = waitSemaphores;
-		VkSemaphoreCreateInfo semaphoreInfo = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-		vkCreateSemaphore(get_vk_device(), &semaphoreInfo, NULL, &nextSemaphore);
-	}
-
 	VkPipelineStageFlags waitStages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	submitInfo.pWaitDstStageMask = &waitStages;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &get_vk_swap_chain()->CommandBuffers[imageIndex];
-	VkSemaphore * signalSemaphores = &nextSemaphore;
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = signalSemaphores;
-	vkQueueSubmit(get_vk_queue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(get_vk_queue());
+	vkQueueSubmit(get_vk_queue(), 1, &submitInfo, the_fence);
+	vkWaitForFences(get_vk_device(), 1, &the_fence, VK_TRUE, SDL_MAX_SINT64);
+	vkResetFences(get_vk_device(), 1, &the_fence);
 }
 
 void sdlex_end_frame(unsigned imageIndex) {
 	VkPresentInfoKHR presentInfo = { .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
-	if (nextSemaphore == VK_NULL_HANDLE) {
-		presentInfo.waitSemaphoreCount = 0;
-	}
-	else {
-		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &nextSemaphore;
-	}
 	VkSwapchainKHR * swapChains = &get_vk_swap_chain()->SwapChain;
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapChains;
@@ -86,8 +73,7 @@ void sdlex_end_frame(unsigned imageIndex) {
 	presentInfo.pResults = NULL;
 	vkQueuePresentKHR(get_vk_queue(), &presentInfo);
 	vkQueueWaitIdle(get_vk_queue());
-
-	vkDestroySemaphore(get_vk_device(), nextSemaphore, NULL);
+	vkDestroyFence(get_vk_device(), the_fence, NULL);
 }
 
 void sdlex_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline, int clear) {
@@ -130,7 +116,6 @@ void sdlex_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipe
 		else {
 			VkBuffer buffer = get_vk_vertex_buffer();
 			VkDeviceSize offset = 0;
-
 			vkCmdBindVertexBuffers(swapchain->CommandBuffers[i], 0, 1, &buffer, &offset);
 			vkCmdBindDescriptorSets(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->PipelineLayout, 0, 1, &pipeline->DescriptorSets[i], 0, NULL);
 			vkCmdDraw(swapchain->CommandBuffers[i], 6, 1, 0, 0);

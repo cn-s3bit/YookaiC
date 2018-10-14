@@ -56,16 +56,19 @@ int main(int argc, char ** argv) {
 			goto LABEL_EXIT;
 		clock_t b = clock();
 		unsigned imageid = sdlex_begin_frame();
-		SDL_Rect p1 = { 0, 0, 200, 400 };
-		p1.x += t;
-		sdlex_render_texture(imageid, p1);
-		SDL_Rect p2 = { 200, 400, 200, 400 };
-		p2.x += t;
-		sdlex_render_texture(imageid, p2);
-		SDL_Rect p3 = { 100, 200, 200, 400 };
-		p3.x += t;
-		sdlex_render_texture(imageid, p3);
+		for (int i = 0; i < 100; i++) {
+			SDL_Rect p1 = { 0, 0, 200, 400 };
+			p1.x += t + i;
+			sdlex_render_texture(imageid, p1);
+			SDL_Rect p2 = { 200, 400, 200, 400 };
+			p2.x += t + i;
+			sdlex_render_texture(imageid, p2);
+			SDL_Rect p3 = { 100, 200, 200, 400 };
+			p3.x += t + i;
+			sdlex_render_texture(imageid, p3);
+		}
 		sdlex_end_frame(imageid);
+		SDL_Log("%d", clock() - b);
 		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);
 		draw_texture(renderer, testTexture, new_sdl_point(250, 50));
