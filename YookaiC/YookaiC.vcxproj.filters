@@ -348,6 +348,9 @@
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanTexture2D.c">
       <Filter>源文件\Game\SDLEx\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanUniform.c">
+      <Filter>源文件\Game\SDLEx\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="VCSDL\lib\win32\SDL2.lib">

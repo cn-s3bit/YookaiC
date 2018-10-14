@@ -18,7 +18,7 @@ void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryProperty
 	ret = vkCreateBuffer(get_vk_device(), &bufferInfo, NULL, out_buffer);
 	if (ret != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-			"Failed to Create Vertex Buffer: vkCreateBuffer returns %d", ret);
+			"Failed to Create Buffer: vkCreateBuffer returns %d", ret);
 		return;
 	}
 
@@ -49,13 +49,13 @@ void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryProperty
 	ret = vkAllocateMemory(get_vk_device(), &allocInfo, NULL, out_memory);
 	if (ret != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-			"Failed to Allocate Vertex Buffer Memory: vkAllocateMemory returns %d", ret);
+			"Failed to Allocate Buffer Memory: vkAllocateMemory returns %d", ret);
 		return;
 	}
 
 	vkBindBufferMemory(get_vk_device(), *out_buffer, *out_memory, 0);
 
-	SDL_Log("Created Vertex Buffer at %u with VRAM at %u",
+	SDL_Log("Created Buffer at %u with VRAM at %u",
 		(unsigned)*out_buffer,
 		(unsigned)*out_memory);
 }

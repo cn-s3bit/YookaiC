@@ -3,12 +3,10 @@ VkDescriptorPool VulkanDescriptorPool;
 extern VkDescriptorSetLayout VulkanDescriptorSetLayout;
 
 void create_descriptor_pool() {
-	VkDescriptorPoolSize poolSize = { .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER };
-	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	VkDescriptorPoolSize poolSize = { .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER };
 	poolSize.descriptorCount = get_vk_swap_chain()->ImageCount;
 
 	VkDescriptorPoolCreateInfo poolInfo = { .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO };
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = 1;
 	poolInfo.pPoolSizes = &poolSize;
 	poolInfo.maxSets = poolSize.descriptorCount;
@@ -34,7 +32,7 @@ void bind_texture(VkImageView textureImageView, VkSampler textureSampler) {
 		VkWriteDescriptorSet descriptorWrites;
 		descriptorWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites.dstSet = get_vk_pipeline()->DescriptorSets[i];
-		descriptorWrites.dstBinding = 1;
+		descriptorWrites.dstBinding = 0;
 		descriptorWrites.dstArrayElement = 0;
 		descriptorWrites.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorWrites.descriptorCount = 1;

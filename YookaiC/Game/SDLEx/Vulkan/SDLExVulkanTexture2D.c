@@ -24,7 +24,7 @@ CODEGEN_CUCKOO_HASHMAP(texviewmap, int, VkImageView, sdlex_hash_int, sdlex_equal
 CODEGEN_CUCKOO_HASHMAP(texsamplermap, int, VkSampler, sdlex_hash_int, sdlex_equal_int, free, sdlex_free_sampler)
 
 CuckooHashMap * texture_images, * texture_memories, * texture_views, * texture_samplers;
-unsigned next_image_id = 0;
+int next_image_id = 0;
 
 SDL_Rect texture_frame(SDL_Texture * texture) {
 	SDL_Rect result = { .x = 0,.y = 0 };
@@ -81,7 +81,6 @@ void create_image(unsigned width, unsigned height, VkFormat format, VkImageTilin
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Allocate Image Memory: vkAllocateMemory returns %d\n", ret);
 		return;
 	}
-
 	vkBindImageMemory(get_vk_device(), *image, *imageMemory, 0);
 }
 
@@ -113,9 +112,9 @@ VkSampler create_sampler() {
 		.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
 		.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
 		.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.anisotropyEnable = VK_TRUE,
+		.anisotropyEnable = VK_FALSE,
 		.maxAnisotropy = 1.0f,
-		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+		.borderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK,
 		.unnormalizedCoordinates = VK_FALSE,
 		.compareEnable = VK_FALSE,
 		.compareOp = VK_COMPARE_OP_ALWAYS,
@@ -132,6 +131,74 @@ VkSampler create_sampler() {
 	return textureSampler;
 }
 
+void transition_image_layout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout) {
+	VkCommandBuffer commandBuffer = begin_single_time_commands();
+
+	VkImageMemoryBarrier barrier = { .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
+	barrier.oldLayout = oldLayout;
+	barrier.newLayout = newLayout;
+	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.image = image;
+	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	barrier.subresourceRange.baseMipLevel = 0;
+	barrier.subresourceRange.levelCount = 1;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.layerCount = 1;
+
+	VkPipelineStageFlags sourceStage;
+	VkPipelineStageFlags destinationStage;
+
+	if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	}
+	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	}
+	else {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unsupported Layout Transition from %d to %d!", oldLayout, newLayout);
+		return;
+	}
+
+	vkCmdPipelineBarrier(
+		commandBuffer,
+		sourceStage, destinationStage,
+		0,
+		0, NULL,
+		0, NULL,
+		1, &barrier
+	);
+	end_single_time_commands(commandBuffer);
+}
+
+void copy_buffer_to_image(VkBuffer buffer, VkImage image, unsigned width, unsigned height) {
+	VkCommandBuffer commandBuffer = begin_single_time_commands();
+
+	VkBufferImageCopy region;
+	region.bufferOffset = 0;
+	region.bufferRowLength = 0;
+	region.bufferImageHeight = 0;
+	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.mipLevel = 0;
+	region.imageSubresource.baseArrayLayer = 0;
+	region.imageSubresource.layerCount = 1;
+	region.imageOffset.x = region.imageOffset.y = region.imageOffset.z = 0;
+	region.imageExtent.width = width;
+	region.imageExtent.height = height;
+	region.imageExtent.depth = 1;
+
+	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+	end_single_time_commands(commandBuffer);
+}
+
 int load_texture2d(const char * filename) {
 	if (!texture_images) {
 		// Initialize
@@ -145,28 +212,43 @@ int load_texture2d(const char * filename) {
 
 	if (!raw) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Load Texture2D: %s", SDL_GetError());
+		return -1;
 	}
 
-	// TODO: Implement Staging Buffer
-	// VkBuffer stagingBuffer;
-	// VkDeviceMemory stagingBufferMemory;
-	// createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-	VkImage * textureImage = NULL;
-	VkDeviceMemory * textureImageMemory = NULL;
-	create_image(raw->w, raw->h, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
-	VkImageView textureImageView = create_image_view(*textureImage, VK_FORMAT_R8G8B8A8_UNORM);
-	VkSampler textureSampler = create_sampler();
-	void * data;
-	vkMapMemory(get_vk_device(), *textureImageMemory, 0, imageSize, 0, &data);
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingBufferMemory;
+	create_buffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory);
+	void* data;
+	vkMapMemory(get_vk_device(), stagingBufferMemory, 0, imageSize, 0, &data);
 	SDL_memcpy(data, raw->pixels, (size_t)(imageSize));
-	vkUnmapMemory(get_vk_device(), *textureImageMemory);
+	vkUnmapMemory(get_vk_device(), stagingBufferMemory);
+	
+	VkImage textureImage;
+	VkDeviceMemory textureImageMemory;
+	create_image(raw->w, raw->h, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureImage, &textureImageMemory);
+	transition_image_layout(textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	copy_buffer_to_image(stagingBuffer, textureImage, (unsigned)(raw->w), (unsigned)(raw->h));
+	transition_image_layout(textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	
+	VkImageView textureImageView = create_image_view(textureImage, VK_FORMAT_R8G8B8A8_UNORM);
+	VkSampler textureSampler = create_sampler();
 
 	++next_image_id;
-	put_teximagemap(texture_images, next_image_id, *textureImage);
-	put_texmemorymap(texture_memories, next_image_id, *textureImageMemory);
+	put_teximagemap(texture_images, next_image_id, textureImage);
+	put_texmemorymap(texture_memories, next_image_id, textureImageMemory);
 	put_texviewmap(texture_views, next_image_id, textureImageView);
 	put_texsamplermap(texture_samplers, next_image_id, textureSampler);
 
 	SDL_FreeSurface(raw);
+	vkDestroyBuffer(get_vk_device(), stagingBuffer, NULL);
+	vkFreeMemory(get_vk_device(), stagingBufferMemory, NULL);
 	return next_image_id;
+}
+
+void bind_texture2d(int texture_id) {
+	if (texture_id < 0 || texture_id > next_image_id) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Invalid texture_id: %d", texture_id);
+		return;
+	}
+	bind_texture(get_texviewmap(texture_views, texture_id), get_texsamplermap(texture_samplers, texture_id));
 }

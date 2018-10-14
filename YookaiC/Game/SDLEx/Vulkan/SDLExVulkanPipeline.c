@@ -2,6 +2,7 @@
 #include "../Utils/FileUtils.h"
 
 SDLExVulkanGraphicsPipeline VulkanPipeline;
+VkDescriptorSetLayout VulkanDescriptorSetLayout;
 SDLExVulkanGraphicsPipeline * get_vk_pipeline(void) {
 	return &VulkanPipeline;
 }
@@ -34,9 +35,22 @@ VkPipeline create_graphics_pipeline_f(const char * vertShaderFilename, const cha
 }
 
 static void _sdlex_prepare_pipeline(void) {
+	VkDescriptorSetLayoutBinding samplerLayoutBinding;
+	samplerLayoutBinding.binding = 0;
+	samplerLayoutBinding.descriptorCount = 1;
+	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	samplerLayoutBinding.pImmutableSamplers = NULL;
+	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+	VkDescriptorSetLayoutCreateInfo layoutInfo = { .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
+	layoutInfo.bindingCount = 1;
+	layoutInfo.pBindings = &samplerLayoutBinding;
+
+	vkCreateDescriptorSetLayout(get_vk_device(), &layoutInfo, NULL, &VulkanDescriptorSetLayout);
+
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = { .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
-	pipelineLayoutInfo.setLayoutCount = 0;
-	pipelineLayoutInfo.pSetLayouts = NULL;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &VulkanDescriptorSetLayout;
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 	pipelineLayoutInfo.pPushConstantRanges = NULL;
 	int ret;
@@ -118,7 +132,7 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
 	VkVertexInputBindingDescription dex = _sdlex_get_binding_description();
 	vertexInputInfo.pVertexBindingDescriptions = &dex;
-	vertexInputInfo.vertexAttributeDescriptionCount = 2;
+	vertexInputInfo.vertexAttributeDescriptionCount = 3;
 	VkVertexInputAttributeDescription * att = _sdlex_get_attribute_descriptions();
 	vertexInputInfo.pVertexAttributeDescriptions = att;
 
@@ -202,6 +216,7 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 		SDL_Log("Created Pipeline at %u\n", (unsigned)VulkanPipeline.GraphicsPipeline);
 		create_frame_buffers(get_vk_swap_chain(), &VulkanPipeline);
 		create_vertex_buffer();
+		create_descriptor_pool();
 	}
 	free(att);
 	vkDestroyShaderModule(get_vk_device(), fragShaderModule, NULL);
@@ -216,4 +231,6 @@ void cleanup_vulkan_pipeline(void) {
 	vkDestroyPipeline(device, VulkanPipeline.GraphicsPipeline, NULL);
 	vkDestroyPipelineLayout(device, VulkanPipeline.PipelineLayout, NULL);
 	vkDestroyRenderPass(device, VulkanPipeline.RenderPass, NULL);
+	cleanup_descriptor_pool();
+	vkDestroyDescriptorSetLayout(device, VulkanDescriptorSetLayout, NULL);
 }

@@ -250,6 +250,7 @@
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanPipeline.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanRender.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanTexture2D.c" />
+    <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanUniform.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanVertex.c" />
   </ItemGroup>
   <ItemGroup>

@@ -2,29 +2,19 @@
 #include "../Utils/MathUtils.h"
 #include "../MathEx/MathEx.h"
 
-Vertex Vertices[3] = {
-	{ { 0.0f, -0.5f },{ 1.0f, 0.0f, 0.0f } },
-	{ { 0.5f, 0.7f },{ 0.0f, 1.0f, 0.0f } },
-	{ { -0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f } }
+Vertex Vertices[6] = {
+	{ { 0.25f, -1.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
+	{ { 0.25f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
+	{ { 0.9f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
+	{ { 0.25f, -1.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
+	{ { 0.9f, -1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } },
+	{ { 0.9f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
 };
 
 void sdlex_test_render(SDLExVulkanSwapChain * swapchain) {
 	// First Update Logic!
 	void * addr = request_vertex_buffer_memory();
-	Vertices[0].Pos.X += 0.002f;
-	Vertices[0].Pos.X = SDLEx_pong(Vertices[0].Pos.X, -1.0f, 1.0f);
-	Vertices[1].Pos.X += 0.004f;
-	Vertices[1].Pos.X = SDLEx_pong(Vertices[1].Pos.X, -1.0f, 1.0f);
-	Vertices[2].Pos.X += 0.006f;
-	Vertices[2].Pos.X = SDLEx_pong(Vertices[2].Pos.X, -1.0f, 1.0f);
 	SDL_memcpy(addr, Vertices, sizeof(Vertices));
-	Vertices[0].Pos.Y *= -1.0f;
-	Vertices[1].Pos.Y *= -1.0f;
-	Vertices[2].Pos.Y *= -1.0f;
-	SDL_memcpy((char *)addr + sizeof(Vertices), Vertices, sizeof(Vertices));
-	Vertices[0].Pos.Y *= -1.0f;
-	Vertices[1].Pos.Y *= -1.0f;
-	Vertices[2].Pos.Y *= -1.0f;
 	flush_vertex_buffer_memory();
 
 	VkDevice device = get_vk_device();
@@ -101,7 +91,7 @@ void sdlex_test_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphic
 		VkBuffer buffer = get_vk_vertex_buffer();
 		VkDeviceSize offset = 0;
 		vkCmdBindVertexBuffers(swapchain->CommandBuffers[i], 0, 1, &buffer, &offset);
-
+		vkCmdBindDescriptorSets(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->PipelineLayout, 0, 1, &pipeline->DescriptorSets[i], 0, NULL);
 		vkCmdDraw(swapchain->CommandBuffers[i], 6, 1, 0, 0);
 
 		vkCmdEndRenderPass(swapchain->CommandBuffers[i]);

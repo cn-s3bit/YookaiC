@@ -49,13 +49,16 @@ int main(int argc, char ** argv) {
 
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
 	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert.spv", RESOURCE_FOLDER "Shaders/default.frag.spv");
-
-	sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
+	int texture_id = load_texture2d(RESOURCE_FOLDER "Game/Image/Ming/Ming.png");
+	bind_texture2d(texture_id);
 	// Main Loop
 	while (1) {
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
 		clock_t b = clock();
+		texture_id = load_texture2d(RESOURCE_FOLDER "Game/Image/Ming/Ming.png");
+		bind_texture2d(texture_id);
+		sdlex_test_render_init(get_vk_swap_chain(), get_vk_pipeline());
 		sdlex_test_render(get_vk_swap_chain());
 		SDL_Log("%d", clock() - b);
 		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
