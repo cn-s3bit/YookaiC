@@ -37,12 +37,12 @@ inline int _sdlex_hashmap_trailing_0(int i) {
 
 inline int hash2(CuckooHashMap * map_obj, int h) {
 	h *= PRIME2;
-	return _sdlex_hashmap_ror(h ^ h, map_obj->_hashShift) & map_obj->_mask;
+	return (h ^ _sdlex_hashmap_ror(h, map_obj->_hashShift)) & map_obj->_mask;
 }
 
 inline int hash3(CuckooHashMap * map_obj, int h) {
 	h *= PRIME3;
-	return _sdlex_hashmap_ror(h ^ h, map_obj->_hashShift) & map_obj->_mask;
+	return (h ^ _sdlex_hashmap_ror(h, map_obj->_hashShift)) & map_obj->_mask;
 }
 
 CuckooHashMap * create_cuckoo_hashmap() {
