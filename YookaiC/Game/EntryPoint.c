@@ -57,7 +57,7 @@ int main(int argc, char ** argv) {
 			goto LABEL_EXIT;
 		clock_t b = clock();
 		unsigned imageid = sdlex_begin_frame();
-		for (int i = 0; i < 200 - t / 3; i++) {
+		for (int i = 0; i < SDL_max(200 - t / 3, 1); i++) {
 			SDL_Rect p1 = { 0, 0, 200, 400 };
 			p1.x += t + i;
 			sdlex_render_texture(imageid, p1);
