@@ -1,6 +1,7 @@
 #include "SDLExVulkan.h"
 #include "../Utils/MathUtils.h"
 #include "../MathEx/MathEx.h"
+#include "../Utils/ArrayList.h"
 
 Vertex Vertices[6] = {
 	{ { 0.25f, -1.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
@@ -13,8 +14,15 @@ Vertex Vertices[6] = {
 
 VkSemaphore imageAvailableSemaphore;
 VkFence the_fence = VK_NULL_HANDLE;
+ArrayList * batch_buffer;
+
+#define VKRENDER_GLOBALS_INIT \
+	if (batch_buffer == NULL) {\
+		batch_buffer = create_array_list(sizeof(Vertices), 16u);\
+	}
 
 unsigned sdlex_begin_frame() {
+	VKRENDER_GLOBALS_INIT
 	VkDevice device = get_vk_device();
 	SDLExVulkanSwapChain * swapchain = get_vk_swap_chain();
 	VkSemaphoreCreateInfo semaphoreInfo = { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
@@ -33,7 +41,6 @@ unsigned sdlex_begin_frame() {
 	vkQueueSubmit(get_vk_queue(), 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(get_vk_queue());
 	vkDestroySemaphore(device, imageAvailableSemaphore, NULL);
-	sdlex_render_init(swapchain, get_vk_pipeline(), 0);
 
 	VkFenceCreateInfo ci = { .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
 	vkCreateFence(device, &ci, NULL, &the_fence);
@@ -41,6 +48,7 @@ unsigned sdlex_begin_frame() {
 }
 
 void sdlex_render_texture(unsigned imageIndex, SDL_Rect target) {
+	VKRENDER_GLOBALS_INIT
 	VkExtent2D screenSize = get_vk_swap_chain()->SwapChainInfo.imageExtent;
 #define MAP_POS_TO_VIEWPORT_X(val) sdlex_map_float((float)val, 0.0f, (float)screenSize.width, -1.0f, 1.0f)
 #define MAP_POS_TO_VIEWPORT_Y(val) sdlex_map_float((float)val, 0.0f, (float)screenSize.height, -1.0f, 1.0f)
@@ -50,8 +58,65 @@ void sdlex_render_texture(unsigned imageIndex, SDL_Rect target) {
 	Vertices[1].Pos.Y = Vertices[2].Pos.Y = Vertices[5].Pos.Y = MAP_POS_TO_VIEWPORT_Y(target.y + target.h);
 #undef MAP_POS_TO_VIEWPORT_X
 #undef MAP_POS_TO_VIEWPORT_Y
+	append_array_list(batch_buffer, Vertices);
+}
+
+void sdlex_end_frame(unsigned imageIndex) {
+	sdlex_render_flush(imageIndex);
+	VkPresentInfoKHR presentInfo = { .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
+	VkSwapchainKHR * swapChains = &get_vk_swap_chain()->SwapChain;
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapChains;
+	presentInfo.pImageIndices = &imageIndex;
+	presentInfo.pResults = NULL;
+	vkQueuePresentKHR(get_vk_queue(), &presentInfo);
+	vkQueueWaitIdle(get_vk_queue());
+	vkDestroyFence(get_vk_device(), the_fence, NULL);
+}
+
+void sdlex_render_flush(unsigned imageIndex) {
+	VKRENDER_GLOBALS_INIT
+	if (batch_buffer->Size == 0)
+		return;
+	unsigned i = imageIndex;
+	SDLExVulkanSwapChain * swapchain = get_vk_swap_chain();
+	SDLExVulkanGraphicsPipeline * pipeline = get_vk_pipeline();
+	recreate_vertex_buffer(batch_buffer->Size);
+	VkCommandBufferBeginInfo beginInfo = { .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO };
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+
+	int ret = vkBeginCommandBuffer(swapchain->CommandBuffers[i], &beginInfo);
+	if (ret != VK_SUCCESS) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+			"Failed to Begin Recording Command Buffer: vkBeginCommandBuffer returns %d\n", ret);
+	}
+
+	VkRenderPassBeginInfo renderPassInfo = { .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
+	renderPassInfo.renderPass = pipeline->RenderPass;
+	renderPassInfo.framebuffer = pipeline->FrameBuffers[i];
+	renderPassInfo.renderArea.offset.x = renderPassInfo.renderArea.offset.y = 0;
+	renderPassInfo.renderArea.extent = swapchain->SwapChainInfo.imageExtent;
+
+	VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	vkCmdBeginRenderPass(swapchain->CommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	vkCmdBindPipeline(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->GraphicsPipeline);
+
+	VkBuffer buffer = get_vk_vertex_buffer();
+	VkDeviceSize offset = 0;
+	vkCmdBindVertexBuffers(swapchain->CommandBuffers[i], 0, 1, &buffer, &offset);
+	vkCmdBindDescriptorSets(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->PipelineLayout, 0, 1, &pipeline->DescriptorSets[i], 0, NULL);
+	vkCmdDraw(swapchain->CommandBuffers[i], batch_buffer->Size, 1, 0, 0);
+	vkCmdEndRenderPass(swapchain->CommandBuffers[i]);
+	if ((ret = vkEndCommandBuffer(swapchain->CommandBuffers[i])) != VK_SUCCESS) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+			"Failed to Record Command Buffer: vkEndCommandBuffer returns %d\n", ret);
+	}
 	void * addr = request_vertex_buffer_memory();
-	SDL_memcpy(addr, Vertices, sizeof(Vertices));
+	SDL_memcpy4(addr, batch_buffer->_data, batch_buffer->ElementSize * batch_buffer->Size / 4);
 	flush_vertex_buffer_memory();
 
 	VkSubmitInfo submitInfo = { .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO };
@@ -62,18 +127,7 @@ void sdlex_render_texture(unsigned imageIndex, SDL_Rect target) {
 	vkQueueSubmit(get_vk_queue(), 1, &submitInfo, the_fence);
 	vkWaitForFences(get_vk_device(), 1, &the_fence, VK_TRUE, SDL_MAX_SINT64);
 	vkResetFences(get_vk_device(), 1, &the_fence);
-}
-
-void sdlex_end_frame(unsigned imageIndex) {
-	VkPresentInfoKHR presentInfo = { .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
-	VkSwapchainKHR * swapChains = &get_vk_swap_chain()->SwapChain;
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = swapChains;
-	presentInfo.pImageIndices = &imageIndex;
-	presentInfo.pResults = NULL;
-	vkQueuePresentKHR(get_vk_queue(), &presentInfo);
-	vkQueueWaitIdle(get_vk_queue());
-	vkDestroyFence(get_vk_device(), the_fence, NULL);
+	batch_buffer->Size = 0;
 }
 
 void sdlex_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline, int clear) {

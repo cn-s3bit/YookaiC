@@ -246,11 +246,12 @@ int load_texture2d(const char * filename) {
 	return next_image_id;
 }
 
-void bind_texture2d(int texture_id) {
+void bind_texture2d(unsigned imageIndex, int texture_id) {
 	if (texture_id < 0 || texture_id > next_image_id) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Invalid texture_id: %d", texture_id);
 		return;
 	}
-	bind_texture(get_texviewmap(texture_views, texture_id), get_texsamplermap(texture_samplers, texture_id));
+	sdlex_render_flush(imageIndex);
+	bind_texture(imageIndex, get_texviewmap(texture_views, texture_id), get_texsamplermap(texture_samplers, texture_id));
 	sdlex_render_init(get_vk_swap_chain(), get_vk_pipeline(), 0);
 }

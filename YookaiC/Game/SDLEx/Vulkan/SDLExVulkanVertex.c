@@ -3,6 +3,7 @@ VkBuffer VulkanVertexBuffer;
 VkDeviceMemory VulkanVertexBufferMemory;
 
 void * SDLExVertexBufferMemory;
+size_t _lastVertexBufferSize;
 
 VkBuffer get_vk_vertex_buffer(void) {
 	return VulkanVertexBuffer;
@@ -60,9 +61,17 @@ void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryProperty
 		(unsigned)*out_memory);
 }
 
-void create_vertex_buffer(void) {
+void recreate_vertex_buffer(unsigned nVertices) {
+	if (_lastVertexBufferSize >= sizeof(Vertex) * nVertices)
+		return;
+	cleanup_vertex_buffer();
+	create_vertex_buffer(nVertices);
+}
+
+void create_vertex_buffer(unsigned nVertices) {
+	_lastVertexBufferSize = sizeof(Vertex) * nVertices;
 	create_buffer(
-		sizeof(Vertex) * 6,
+		sizeof(Vertex) * nVertices,
 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		&VulkanVertexBuffer,
@@ -81,6 +90,9 @@ void flush_vertex_buffer_memory(void) {
 }
 
 void cleanup_vertex_buffer(void) {
+	if (VulkanVertexBuffer == VK_NULL_HANDLE)
+		return;
 	vkDestroyBuffer(get_vk_device(), VulkanVertexBuffer, NULL);
 	vkFreeMemory(get_vk_device(), VulkanVertexBufferMemory, NULL);
+	VulkanVertexBuffer = VK_NULL_HANDLE;
 }

@@ -215,7 +215,7 @@ VkPipeline create_graphics_pipeline(VkShaderModule vertShaderModule, VkShaderMod
 	else {
 		SDL_Log("Created Pipeline at %u\n", (unsigned)VulkanPipeline.GraphicsPipeline);
 		create_frame_buffers(get_vk_swap_chain(), &VulkanPipeline);
-		create_vertex_buffer();
+		create_vertex_buffer(6);
 		create_descriptor_pool();
 	}
 	free(att);

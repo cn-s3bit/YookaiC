@@ -58,7 +58,8 @@ VkCommandBuffer begin_single_time_commands();
 void end_single_time_commands(VkCommandBuffer commandBuffer);
 
 void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer * out_buffer, VkDeviceMemory * out_memory);
-void create_vertex_buffer(void);
+void create_vertex_buffer(unsigned nVertices);
+void recreate_vertex_buffer(unsigned nVertices);
 void cleanup_vertex_buffer(void);
 VkBuffer get_vk_vertex_buffer(void);
 void * request_vertex_buffer_memory(void);
@@ -70,15 +71,16 @@ VkImageView create_image_view(VkImage image, VkFormat format);
 void transition_image_layout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 void copy_buffer_to_image(VkBuffer buffer, VkImage image, unsigned width, unsigned height);
 int load_texture2d(const char * filename);
-void bind_texture2d(int texture_id);
+void bind_texture2d(unsigned imageIndex, int texture_id);
 
 void create_descriptor_pool();
 void create_descriptor_sets();
 void cleanup_descriptor_pool();
-void bind_texture(VkImageView textureImageView, VkSampler textureSampler);
+void bind_texture(unsigned imageIndex, VkImageView textureImageView, VkSampler textureSampler);
 
 unsigned sdlex_begin_frame();
 void sdlex_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline, int clear);
+void sdlex_render_flush(unsigned imageIndex);
 void sdlex_render_texture(unsigned imageIndex, SDL_Rect target);
 void sdlex_end_frame(unsigned imageIndex);
 

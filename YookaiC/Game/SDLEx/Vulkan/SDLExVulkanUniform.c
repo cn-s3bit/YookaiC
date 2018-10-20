@@ -21,9 +21,8 @@ void cleanup_descriptor_pool() {
 	vkDestroyDescriptorPool(get_vk_device(), VulkanDescriptorPool, NULL);
 }
 
-void bind_texture(VkImageView textureImageView, VkSampler textureSampler) {
-	unsigned n = get_vk_swap_chain()->ImageCount;
-	for (unsigned i = 0; i < n; i++) {
+void bind_texture(unsigned imageIndex, VkImageView textureImageView, VkSampler textureSampler) {
+	unsigned i = imageIndex; {
 		VkDescriptorImageInfo imageInfo;
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView = textureImageView;
