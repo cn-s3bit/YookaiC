@@ -47,7 +47,8 @@ int main(int argc, char ** argv) {
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
 	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert.spv", RESOURCE_FOLDER "Shaders/default.frag.spv");
 	int texture_id = load_texture2d(RESOURCE_FOLDER "Game/Image/Ming/Ming.png");
-	bind_texture2d(texture_id);
+	for (unsigned m = 0; m < get_vk_swap_chain()->ImageCount; m++)
+		bind_texture2d(m, texture_id);
 	int t = 0;
 	// Main Loop
 	while (1) {
@@ -56,7 +57,7 @@ int main(int argc, char ** argv) {
 			goto LABEL_EXIT;
 		clock_t b = clock();
 		unsigned imageid = sdlex_begin_frame();
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 200 - t / 3; i++) {
 			SDL_Rect p1 = { 0, 0, 200, 400 };
 			p1.x += t + i;
 			sdlex_render_texture(imageid, p1);
