@@ -109,7 +109,7 @@ void sdlex_render_flush(unsigned imageIndex) {
 	VkDeviceSize offset = 0;
 	vkCmdBindVertexBuffers(swapchain->CommandBuffers[i], 0, 1, &buffer, &offset);
 	vkCmdBindDescriptorSets(swapchain->CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->PipelineLayout, 0, 1, &pipeline->DescriptorSets[i], 0, NULL);
-	vkCmdDraw(swapchain->CommandBuffers[i], batch_buffer->Size, 1, 0, 0);
+	vkCmdDraw(swapchain->CommandBuffers[i], batch_buffer->Size * 6, 1, 0, 0);
 	vkCmdEndRenderPass(swapchain->CommandBuffers[i]);
 	if ((ret = vkEndCommandBuffer(swapchain->CommandBuffers[i])) != VK_SUCCESS) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
