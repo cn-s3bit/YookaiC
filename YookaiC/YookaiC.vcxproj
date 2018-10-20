@@ -150,6 +150,7 @@
     <ClInclude Include="Game\SDLEx\MathEx\Vector2.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector3.h" />
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />
+    <ClInclude Include="Game\SDLEx\Utils\ArrayList.h" />
     <ClInclude Include="Game\SDLEx\Utils\FileUtils.h" />
     <ClInclude Include="Game\SDLEx\Utils\HashMap.h" />
     <ClInclude Include="Game\SDLEx\Utils\MathUtils.h" />
@@ -242,6 +243,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c" />
+    <ClCompile Include="Game\SDLEx\Utils\ArrayList.c" />
     <ClCompile Include="Game\SDLEx\Utils\FileUtils.c" />
     <ClCompile Include="Game\SDLEx\Utils\HashMap.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.c" />
