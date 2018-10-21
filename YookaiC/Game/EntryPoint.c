@@ -40,7 +40,6 @@ int main(int argc, char ** argv) {
 	SDL_Renderer * renderer = SDL_CreateSoftwareRenderer(surfaceForSoftwareRender);
 
 	SDL_Texture * testTexture = load_texture(renderer, RESOURCE_FOLDER "Image/Ming/Ming.png");*/
-	vector2_log_output(vector2_add(vector2_one(), vector2_one()), "test");
 
 	TTF_Font * testFont = TTF_OpenFont(DEFAULT_FONT_PATH, 32);
 
@@ -61,12 +60,11 @@ int main(int argc, char ** argv) {
 			SDL_Rect p1 = { 0, 0, 200, 400 };
 			p1.x += t + i;
 			sdlex_render_texture(imageid, p1);
-			SDL_Rect p2 = { 200, 400, 200, 400 };
-			p2.x += t + i;
-			sdlex_render_texture(imageid, p2);
-			SDL_Rect p3 = { 100, 200, 200, 400 };
-			p3.x += t + i;
-			sdlex_render_texture(imageid, p3);
+			sdlex_render_texture_ex(imageid,
+				vector2_scl(vector2_one(), (float)t),
+				vector2_adds(vector2_zero(), 200, 400),
+				1.0f * (float)(t + i),
+				vector2_scl(vector2_one(), 0.4f));
 		}
 		sdlex_end_frame(imageid);
 		SDL_Log("%d", clock() - b);

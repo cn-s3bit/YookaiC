@@ -66,7 +66,7 @@ void * request_vertex_buffer_memory(void);
 void flush_vertex_buffer_memory(void);
 
 SDL_Rect texture_frame(SDL_Texture * texture);
-void create_image(unsigned width, unsigned height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage * image, VkDeviceMemory * imageMemory);
+VkImageCreateInfo create_image(unsigned width, unsigned height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage * image, VkDeviceMemory * imageMemory);
 VkImageView create_image_view(VkImage image, VkFormat format);
 void transition_image_layout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 void copy_buffer_to_image(VkBuffer buffer, VkImage image, unsigned width, unsigned height);
@@ -76,12 +76,14 @@ void bind_texture2d(unsigned imageIndex, int texture_id);
 void create_descriptor_pool();
 void create_descriptor_sets();
 void cleanup_descriptor_pool();
-void bind_texture(unsigned imageIndex, VkImageView textureImageView, VkSampler textureSampler);
+void bind_texture(unsigned imageIndex, VkImageView textureImageView, VkSampler textureSampler, VkImageCreateInfo textureInfo);
+VkImageCreateInfo * sdlex_get_current_texture_info(unsigned imageIndex);
 
 unsigned sdlex_begin_frame();
 void sdlex_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipeline * pipeline, int clear);
 void sdlex_render_flush(unsigned imageIndex);
 void sdlex_render_texture(unsigned imageIndex, SDL_Rect target);
+void sdlex_render_texture_ex(unsigned imageIndex, Vector2 position, Vector2 origin, float rotation, Vector2 scale);
 void sdlex_end_frame(unsigned imageIndex);
 
 inline VkVertexInputBindingDescription _sdlex_get_binding_description(void) {

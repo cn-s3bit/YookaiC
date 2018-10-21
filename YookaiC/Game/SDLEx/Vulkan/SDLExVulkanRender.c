@@ -48,6 +48,7 @@ unsigned sdlex_begin_frame() {
 }
 
 void sdlex_render_texture(unsigned imageIndex, SDL_Rect target) {
+	// TODO: Image Specificated Batching
 	VKRENDER_GLOBALS_INIT
 	VkExtent2D screenSize = get_vk_swap_chain()->SwapChainInfo.imageExtent;
 #define MAP_POS_TO_VIEWPORT_X(val) sdlex_map_float((float)val, 0.0f, (float)screenSize.width, -1.0f, 1.0f)
@@ -56,6 +57,51 @@ void sdlex_render_texture(unsigned imageIndex, SDL_Rect target) {
 	Vertices[2].Pos.X = Vertices[4].Pos.X = Vertices[5].Pos.X = MAP_POS_TO_VIEWPORT_X(target.x + target.w);
 	Vertices[0].Pos.Y = Vertices[3].Pos.Y = Vertices[4].Pos.Y = MAP_POS_TO_VIEWPORT_Y(target.y);
 	Vertices[1].Pos.Y = Vertices[2].Pos.Y = Vertices[5].Pos.Y = MAP_POS_TO_VIEWPORT_Y(target.y + target.h);
+#undef MAP_POS_TO_VIEWPORT_X
+#undef MAP_POS_TO_VIEWPORT_Y
+	append_array_list(batch_buffer, Vertices);
+}
+
+void sdlex_render_texture_ex(unsigned imageIndex, Vector2 position, Vector2 origin, float rotation, Vector2 scale) {
+	VKRENDER_GLOBALS_INIT
+		VkExtent2D screenSize = get_vk_swap_chain()->SwapChainInfo.imageExtent;
+	VkImageCreateInfo * currentTextureInfo = sdlex_get_current_texture_info(imageIndex);
+	Vector2 leftBottom = vector2_sub(position, origin);
+	Vector2 rightUpper = vector2_adds(leftBottom, (float)currentTextureInfo->extent.width, (float)currentTextureInfo->extent.height);
+	leftBottom = vector2_sub(leftBottom, position);
+	rightUpper = vector2_sub(rightUpper, position);
+	leftBottom.X *= scale.X;
+	leftBottom.Y *= scale.Y;
+	rightUpper.X *= scale.X;
+	rightUpper.Y *= scale.Y;
+	leftBottom = vector2_add(leftBottom, position);
+	rightUpper = vector2_add(rightUpper, position);
+#define MAP_POS_TO_VIEWPORT_X(val) sdlex_map_float((float)val, 0.0f, (float)screenSize.width, -1.0f, 1.0f)
+#define MAP_POS_TO_VIEWPORT_Y(val) sdlex_map_float((float)val, 0.0f, (float)screenSize.height, -1.0f, 1.0f)
+	Vertices[0].Pos.X = Vertices[1].Pos.X = Vertices[3].Pos.X = (leftBottom.X);
+	Vertices[2].Pos.X = Vertices[4].Pos.X = Vertices[5].Pos.X = (rightUpper.X);
+	Vertices[0].Pos.Y = Vertices[3].Pos.Y = Vertices[4].Pos.Y = (leftBottom.Y);
+	Vertices[1].Pos.Y = Vertices[2].Pos.Y = Vertices[5].Pos.Y = (rightUpper.Y);
+	Vertices[0].Pos = vector2_rotate_around(Vertices[0].Pos, position, rotation);
+	Vertices[1].Pos = vector2_rotate_around(Vertices[1].Pos, position, rotation);
+	Vertices[2].Pos = vector2_rotate_around(Vertices[2].Pos, position, rotation);
+	Vertices[3].Pos = vector2_rotate_around(Vertices[3].Pos, position, rotation);
+	Vertices[4].Pos = vector2_rotate_around(Vertices[4].Pos, position, rotation);
+	Vertices[5].Pos = vector2_rotate_around(Vertices[5].Pos, position, rotation);
+
+	Vertices[0].Pos.X = MAP_POS_TO_VIEWPORT_X(Vertices[0].Pos.X);
+	Vertices[1].Pos.X = MAP_POS_TO_VIEWPORT_X(Vertices[1].Pos.X);
+	Vertices[2].Pos.X = MAP_POS_TO_VIEWPORT_X(Vertices[2].Pos.X);
+	Vertices[3].Pos.X = MAP_POS_TO_VIEWPORT_X(Vertices[3].Pos.X);
+	Vertices[4].Pos.X = MAP_POS_TO_VIEWPORT_X(Vertices[4].Pos.X);
+	Vertices[5].Pos.X = MAP_POS_TO_VIEWPORT_X(Vertices[5].Pos.X);
+
+	Vertices[0].Pos.Y = MAP_POS_TO_VIEWPORT_Y(Vertices[0].Pos.Y);
+	Vertices[1].Pos.Y = MAP_POS_TO_VIEWPORT_Y(Vertices[1].Pos.Y);
+	Vertices[2].Pos.Y = MAP_POS_TO_VIEWPORT_Y(Vertices[2].Pos.Y);
+	Vertices[3].Pos.Y = MAP_POS_TO_VIEWPORT_Y(Vertices[3].Pos.Y);
+	Vertices[4].Pos.Y = MAP_POS_TO_VIEWPORT_Y(Vertices[4].Pos.Y);
+	Vertices[5].Pos.Y = MAP_POS_TO_VIEWPORT_Y(Vertices[5].Pos.Y);
 #undef MAP_POS_TO_VIEWPORT_X
 #undef MAP_POS_TO_VIEWPORT_Y
 	append_array_list(batch_buffer, Vertices);

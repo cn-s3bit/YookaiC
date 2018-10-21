@@ -2,6 +2,12 @@
 VkDescriptorPool VulkanDescriptorPool;
 extern VkDescriptorSetLayout VulkanDescriptorSetLayout;
 
+VkImageCreateInfo VulkanCurrentTextureInfo[1024];
+
+VkImageCreateInfo * sdlex_get_current_texture_info(unsigned imageIndex) {
+	return &VulkanCurrentTextureInfo[imageIndex];
+}
+
 void create_descriptor_pool() {
 	VkDescriptorPoolSize poolSize = { .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER };
 	poolSize.descriptorCount = get_vk_swap_chain()->ImageCount;
@@ -21,8 +27,9 @@ void cleanup_descriptor_pool() {
 	vkDestroyDescriptorPool(get_vk_device(), VulkanDescriptorPool, NULL);
 }
 
-void bind_texture(unsigned imageIndex, VkImageView textureImageView, VkSampler textureSampler) {
+void bind_texture(unsigned imageIndex, VkImageView textureImageView, VkSampler textureSampler, VkImageCreateInfo textureInfo) {
 	unsigned i = imageIndex; {
+		VulkanCurrentTextureInfo[imageIndex] = textureInfo;
 		VkDescriptorImageInfo imageInfo;
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView = textureImageView;
@@ -36,7 +43,6 @@ void bind_texture(unsigned imageIndex, VkImageView textureImageView, VkSampler t
 		descriptorWrites.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorWrites.descriptorCount = 1;
 		descriptorWrites.pImageInfo = &imageInfo;
-
 		vkUpdateDescriptorSets(get_vk_device(), 1, &descriptorWrites, 0, NULL);
 	}
 }

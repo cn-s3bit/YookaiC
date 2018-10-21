@@ -319,6 +319,9 @@
     <ClInclude Include="Game\SDLEx\Utils\ArrayList.h">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Game\SDLEx\MathEx\MathExConsts.h">
+      <Filter>源文件\Game\SDLEx\MathEx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">

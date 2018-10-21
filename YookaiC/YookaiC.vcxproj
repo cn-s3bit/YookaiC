@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="Game\Constants.h" />
     <ClInclude Include="Game\SDLEx\MathEx\MathEx.h" />
+    <ClInclude Include="Game\SDLEx\MathEx\MathExConsts.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector2.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector3.h" />
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />

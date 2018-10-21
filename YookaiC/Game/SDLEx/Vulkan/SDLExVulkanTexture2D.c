@@ -22,8 +22,9 @@ CODEGEN_CUCKOO_HASHMAP(teximagemap, int, VkImage, sdlex_hash_int, sdlex_equal_in
 CODEGEN_CUCKOO_HASHMAP(texmemorymap, int, VkDeviceMemory, sdlex_hash_int, sdlex_equal_int, free, sdlex_free_memory)
 CODEGEN_CUCKOO_HASHMAP(texviewmap, int, VkImageView, sdlex_hash_int, sdlex_equal_int, free, sdlex_free_imageview)
 CODEGEN_CUCKOO_HASHMAP(texsamplermap, int, VkSampler, sdlex_hash_int, sdlex_equal_int, free, sdlex_free_sampler)
+CODEGEN_CUCKOO_HASHMAP(texinfomap, int, VkImageCreateInfo, sdlex_hash_int, sdlex_equal_int, free, free)
 
-CuckooHashMap * texture_images, * texture_memories, * texture_views, * texture_samplers;
+CuckooHashMap * texture_images, * texture_memories, * texture_views, * texture_samplers, * texture_infos;
 int next_image_id = 0;
 
 SDL_Rect texture_frame(SDL_Texture * texture) {
@@ -32,7 +33,7 @@ SDL_Rect texture_frame(SDL_Texture * texture) {
 	return result;
 }
 
-void create_image(unsigned width, unsigned height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage * image, VkDeviceMemory * imageMemory) {
+VkImageCreateInfo create_image(unsigned width, unsigned height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage * image, VkDeviceMemory * imageMemory) {
 	VkImageCreateInfo imageInfo = { .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
 	imageInfo.extent.width = width;
@@ -49,8 +50,9 @@ void create_image(unsigned width, unsigned height, VkFormat format, VkImageTilin
 
 	int ret = vkCreateImage(get_vk_device(), &imageInfo, NULL, image);
 	if (ret != VK_SUCCESS) {
+		imageInfo.imageType = VK_IMAGE_TYPE_MAX_ENUM;
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Create Image for Texture: vkCreateImage returns %d\n", ret);
-		return;
+		return imageInfo;
 	}
 
 	VkMemoryRequirements memRequirements;
@@ -71,17 +73,20 @@ void create_image(unsigned width, unsigned height, VkFormat format, VkImageTilin
 	}
 
 	if (found == SDL_MAX_UINT32) {
+		imageInfo.imageType = VK_IMAGE_TYPE_MAX_ENUM;
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Find Suitable Memory Type!");
-		return;
+		return imageInfo;
 	}
 	allocInfo.memoryTypeIndex = found;
 
 	ret = vkAllocateMemory(get_vk_device(), &allocInfo, NULL, imageMemory);
 	if (ret != VK_SUCCESS) {
+		imageInfo.imageType = VK_IMAGE_TYPE_MAX_ENUM;
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Allocate Image Memory: vkAllocateMemory returns %d\n", ret);
-		return;
+		return imageInfo;
 	}
 	vkBindImageMemory(get_vk_device(), *image, *imageMemory, 0);
+	return imageInfo;
 }
 
 VkImageView create_image_view(VkImage image, VkFormat format) {
@@ -206,6 +211,7 @@ int load_texture2d(const char * filename) {
 		texture_memories = create_texmemorymap();
 		texture_views = create_texviewmap();
 		texture_samplers = create_texsamplermap();
+		texture_infos = create_texinfomap();
 	}
 	SDL_Surface * raw = IMG_Load(filename);
 	if (!raw) {
@@ -225,7 +231,7 @@ int load_texture2d(const char * filename) {
 	
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
-	create_image(raw->w, raw->h, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureImage, &textureImageMemory);
+	VkImageCreateInfo imageInfo = create_image(raw->w, raw->h, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureImage, &textureImageMemory);
 	transition_image_layout(textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copy_buffer_to_image(stagingBuffer, textureImage, (unsigned)(raw->w), (unsigned)(raw->h));
 	transition_image_layout(textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -238,6 +244,7 @@ int load_texture2d(const char * filename) {
 	put_texmemorymap(texture_memories, next_image_id, textureImageMemory);
 	put_texviewmap(texture_views, next_image_id, textureImageView);
 	put_texsamplermap(texture_samplers, next_image_id, textureSampler);
+	put_texinfomap(texture_infos, next_image_id, imageInfo);
 	// TODO: Disposal
 
 	SDL_FreeSurface(raw);
@@ -252,6 +259,6 @@ void bind_texture2d(unsigned imageIndex, int texture_id) {
 		return;
 	}
 	sdlex_render_flush(imageIndex);
-	bind_texture(imageIndex, get_texviewmap(texture_views, texture_id), get_texsamplermap(texture_samplers, texture_id));
+	bind_texture(imageIndex, get_texviewmap(texture_views, texture_id), get_texsamplermap(texture_samplers, texture_id), get_texinfomap(texture_infos, texture_id));
 	sdlex_render_init(get_vk_swap_chain(), get_vk_pipeline(), 0);
 }
