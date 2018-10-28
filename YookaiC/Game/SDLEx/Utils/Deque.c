@@ -40,7 +40,7 @@ int push_deque_tail(Deque * deque, const void * inItem) {
 		deque->_tail += expand;
 		free(tmp_trash);
 	}
-	return assign_array_list_element((ArrayList *)deque, deque->_tail, inItem);
+	return assign_array_list_element((ArrayList *)deque, deque->_tail - 1 < 0 ? deque->_tail - 1 + deque->_arrayList.Size : deque->_tail - 1, inItem);
 }
 int poll_deque_head(Deque * deque, void * outItem) {
 	if (deque->_head == deque->_tail)
@@ -84,29 +84,36 @@ int push_deque_head(Deque * deque, const void * inItem) {
 int poll_deque_tail(Deque * deque, void * outItem) {
 	if (deque->_head == deque->_tail)
 		return DEQUEUE_NO_ITEM;
-	int ret = get_element_from_array_list((ArrayList *)deque, deque->_tail, outItem);
-	if (ret != 0)
-		return ret;
 	--deque->_tail;
 	if (deque->_tail < 0) {
 		deque->_tail += deque->_arrayList.Size;
 	}
-	return 0;
+	return get_element_from_array_list((ArrayList *)deque, deque->_tail, outItem);
 }
 int peek_deque_tail(Deque * deque, void * outItem) {
 	if (deque->_head == deque->_tail)
 		return DEQUEUE_NO_ITEM;
-	return get_element_from_array_list((ArrayList *)deque, deque->_tail, outItem);
+	return get_element_from_array_list((ArrayList *)deque, deque->_tail - 1 < 0 ? deque->_tail - 1 + deque->_arrayList.Size : deque->_tail - 1, outItem);
 }
 int assign_deque_element(Deque * deque, unsigned index_from_head, const void * inItem) {
 	if (deque->_head == deque->_tail)
 		return DEQUEUE_NO_ITEM;
-	unsigned real_index = deque->_head + index_from_head % (deque->_tail - deque->_head);
+	unsigned real_index = deque->_head + index_from_head % get_deque_size(deque);
 	return assign_array_list_element((ArrayList *)deque, real_index, inItem);
 }
 int get_deque_element(Deque * deque, unsigned index_from_head, void * outItem) {
 	if (deque->_head == deque->_tail)
 		return DEQUEUE_NO_ITEM;
-	unsigned real_index = deque->_head + index_from_head % (deque->_tail - deque->_head);
+	unsigned real_index = deque->_head + index_from_head % get_deque_size(deque);
 	return get_element_from_array_list((ArrayList *)deque, real_index, outItem);
+}
+int get_deque_size(Deque * deque) {
+	int tail = deque->_tail;
+	int head = deque->_head;
+	if (tail >= head)
+		return tail - head;
+	else {
+		tail += deque->_arrayList.Size;
+		return tail - head;
+	}
 }

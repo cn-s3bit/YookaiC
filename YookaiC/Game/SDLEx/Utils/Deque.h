@@ -15,6 +15,7 @@ int peek_deque_head(Deque * deque, void * outItem);
 int push_deque_tail(Deque * deque, const void * inItem);
 int poll_deque_tail(Deque * deque, void * outItem);
 int peek_deque_tail(Deque * deque, void * outItem);
+int get_deque_size(Deque * deque);
 int assign_deque_element(Deque * deque, unsigned index_from_head, const void * inItem);
 int get_deque_element(Deque * deque, unsigned index_from_head, void * outItem);
 #endif
