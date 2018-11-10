@@ -98,7 +98,7 @@ int sdlex_equal_int(void * pt1, void * pt2);
 	}\
 \
 	static VALUETYPE get_##POSTFIX(CuckooHashMap * map_obj, KEYTYPE key) {\
-		KEYTYPE * pkey = malloc(sizeof(int));\
+		KEYTYPE * pkey = malloc(sizeof(KEYTYPE));\
 		*pkey = key;\
 		VALUETYPE * fetched = get_cuckoo_hashmap(map_obj, pkey);\
 		FREE_KEY_FUNC(pkey);\
@@ -106,7 +106,7 @@ int sdlex_equal_int(void * pt1, void * pt2);
 	}\
 \
 	static VALUETYPE remove_from_##POSTFIX(CuckooHashMap * map_obj, KEYTYPE key) {\
-		KEYTYPE * pkey = malloc(sizeof(int));\
+		KEYTYPE * pkey = malloc(sizeof(KEYTYPE));\
 		*pkey = key;\
 		VALUETYPE * fetched = remove_from_cuckoo_hashmap(map_obj, pkey);\
 		FREE_KEY_FUNC(pkey);\
