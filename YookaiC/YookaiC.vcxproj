@@ -156,6 +156,7 @@
     <ClInclude Include="Game\SDLEx\Utils\FileUtils.h" />
     <ClInclude Include="Game\SDLEx\Utils\HashMap.h" />
     <ClInclude Include="Game\SDLEx\Utils\MathUtils.h" />
+    <ClInclude Include="Game\SDLEx\Utils\MemoryPool.h" />
     <ClInclude Include="Game\SDLEx\Vulkan\SDLExVulkan.h" />
     <ClInclude Include="VCSDL\include\begin_code.h" />
     <ClInclude Include="VCSDL\include\close_code.h" />
@@ -249,6 +250,7 @@
     <ClCompile Include="Game\SDLEx\Utils\Deque.c" />
     <ClCompile Include="Game\SDLEx\Utils\FileUtils.c" />
     <ClCompile Include="Game\SDLEx\Utils\HashMap.c" />
+    <ClCompile Include="Game\SDLEx\Utils\MemoryPool.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanCommandBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanFrameBuffer.c" />
     <ClCompile Include="Game\SDLEx\Vulkan\SDLExVulkanInstance.c" />

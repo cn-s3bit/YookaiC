@@ -325,6 +325,9 @@
     <ClInclude Include="Game\SDLEx\Utils\Deque.h">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Game\SDLEx\Utils\MemoryPool.h">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">
@@ -364,6 +367,9 @@
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Utils\Deque.c">
+      <Filter>源文件\Game\SDLEx\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\Utils\MemoryPool.c">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClCompile>
   </ItemGroup>

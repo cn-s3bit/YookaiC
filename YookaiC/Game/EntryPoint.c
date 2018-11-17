@@ -9,6 +9,8 @@
 
 #include "SDLEx/Utils/HashMap.h"
 
+CODEGEN_CUCKOO_HASHMAP(intintmap, int, int, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, memorypool_free_4bytes)
+
 void init_sdl(void) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
@@ -56,6 +58,21 @@ int main(int argc, char ** argv) {
 			goto LABEL_EXIT;
 		clock_t b = clock();
 		unsigned imageid = sdlex_begin_frame();
+		CuckooHashMap * map = create_intintmap();
+		for (int i = 0; i < 100000; i++) {
+			int r = rand();
+			int v = rand();
+			put_intintmap(map, r, v);
+			v = rand();
+			put_intintmap(map, r, v);
+			if (get_intintmap(map, r) != v)
+				printf("Error\n");
+			r = rand();
+			put_intintmap(map, r, v + 2);
+			if (remove_from_intintmap(map, r) != v + 2)
+				printf("Error\n");
+		}
+		destroy_cuckoo_hashmap(map);
 		for (int i = 0; i < SDL_max(200 - t / 3, 1); i++) {
 			SDL_Rect p1 = { 0, 0, 200, 400 };
 			p1.x += t + i;

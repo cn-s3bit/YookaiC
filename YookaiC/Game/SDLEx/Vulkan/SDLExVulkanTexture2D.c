@@ -18,11 +18,11 @@ void sdlex_free_sampler(void * pt) {
 	free(pt);
 }
 
-CODEGEN_CUCKOO_HASHMAP(teximagemap, int, VkImage, sdlex_hash_int, sdlex_equal_int, free, sdlex_free_image)
-CODEGEN_CUCKOO_HASHMAP(texmemorymap, int, VkDeviceMemory, sdlex_hash_int, sdlex_equal_int, free, sdlex_free_memory)
-CODEGEN_CUCKOO_HASHMAP(texviewmap, int, VkImageView, sdlex_hash_int, sdlex_equal_int, free, sdlex_free_imageview)
-CODEGEN_CUCKOO_HASHMAP(texsamplermap, int, VkSampler, sdlex_hash_int, sdlex_equal_int, free, sdlex_free_sampler)
-CODEGEN_CUCKOO_HASHMAP(texinfomap, int, VkImageCreateInfo, sdlex_hash_int, sdlex_equal_int, free, free)
+CODEGEN_CUCKOO_HASHMAP(teximagemap, int, VkImage, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_image)
+CODEGEN_CUCKOO_HASHMAP(texmemorymap, int, VkDeviceMemory, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_memory)
+CODEGEN_CUCKOO_HASHMAP(texviewmap, int, VkImageView, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_imageview)
+CODEGEN_CUCKOO_HASHMAP(texsamplermap, int, VkSampler, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_sampler)
+CODEGEN_CUCKOO_HASHMAP(texinfomap, int, VkImageCreateInfo, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, free)
 
 CuckooHashMap * texture_images, * texture_memories, * texture_views, * texture_samplers, * texture_infos;
 int next_image_id = 0;
