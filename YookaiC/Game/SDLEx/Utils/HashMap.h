@@ -1,6 +1,7 @@
 #ifndef SDLEX_HASHMAP_H
 #define SDLEX_HASHMAP_H
 #include <string.h>
+#include "MemoryPool.h"
 
 #define PRIME1 0xbe1f14b1
 #define PRIME2 0xb4b82e39
@@ -87,8 +88,8 @@ int sdlex_equal_int(void * pt1, void * pt2);
 	}\
 \
 	static void put_##POSTFIX(CuckooHashMap * map_obj, KEYTYPE key, VALUETYPE value) {\
-		KEYTYPE * pkey = malloc(sizeof(KEYTYPE));\
-		VALUETYPE * pvalue = malloc(sizeof(VALUETYPE));\
+		KEYTYPE * pkey = memorypool_malloc(sizeof(KEYTYPE));\
+		VALUETYPE * pvalue = memorypool_malloc(sizeof(VALUETYPE));\
 		*pkey = key;\
 		*pvalue = value;\
 		VALUETYPE * fetched = put_cuckoo_hashmap(map_obj, pkey, pvalue);\
@@ -98,7 +99,7 @@ int sdlex_equal_int(void * pt1, void * pt2);
 	}\
 \
 	static VALUETYPE get_##POSTFIX(CuckooHashMap * map_obj, KEYTYPE key) {\
-		KEYTYPE * pkey = malloc(sizeof(KEYTYPE));\
+		KEYTYPE * pkey = memorypool_malloc(sizeof(KEYTYPE));\
 		*pkey = key;\
 		VALUETYPE * fetched = get_cuckoo_hashmap(map_obj, pkey);\
 		FREE_KEY_FUNC(pkey);\
@@ -106,7 +107,7 @@ int sdlex_equal_int(void * pt1, void * pt2);
 	}\
 \
 	static VALUETYPE remove_from_##POSTFIX(CuckooHashMap * map_obj, KEYTYPE key) {\
-		KEYTYPE * pkey = malloc(sizeof(KEYTYPE));\
+		KEYTYPE * pkey = memorypool_malloc(sizeof(KEYTYPE));\
 		*pkey = key;\
 		VALUETYPE * fetched = remove_from_cuckoo_hashmap(map_obj, pkey);\
 		FREE_KEY_FUNC(pkey);\
