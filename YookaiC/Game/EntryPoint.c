@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
-#include "SDLEx/LazyPython.h"
+#include "SDLEx/Scripting/PyExtend.h"
 #include "SDLEx/SDLWithPlugins.h"
 #include "SDLEx/Utils/MathUtils.h"
 #include "SDLEx/Utils/FileUtils.h"
@@ -42,12 +42,6 @@ int main(int argc, char ** argv) {
 	if (argc > 0)
 		SDL_Log("Working Path: %s\n", argv[0]);
 	extended_py_initialize(argv);
-	PyRun_SimpleString("import this");
-	if (extended_py_dispose() < 0) {
-		exit(120);
-	}
-	printf("Press Enter to Continue...");
-	getchar();
 	init_sdl();
 	SDL_Window * window = SDL_CreateWindow("Yookai 妖召", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_VULKAN);
 	/*SDL_Surface * surfaceForSoftwareRender = SDL_GetWindowSurface(window);
@@ -63,13 +57,16 @@ int main(int argc, char ** argv) {
 	for (unsigned m = 0; m < get_vk_swap_chain()->ImageCount; m++)
 		bind_texture2d(m, texture_id);
 	int t = 0;
+	unsigned size;
+	char * oneframe = read_file_to_char_array(RESOURCE_FOLDER "test_oneframe.py", &size);
 	// Main Loop
 	while (1) {
 		t++;
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
 		clock_t b = clock();
-		unsigned imageid = sdlex_begin_frame();
+		PyRun_SimpleString(oneframe);
+		/*unsigned imageid = sdlex_begin_frame();
 		for (int i = 0; i < SDL_max(200 - t / 3, 1); i++) {
 			SDL_Rect p1 = { 0, 0, 200, 400 };
 			p1.x += t + i;
@@ -80,7 +77,7 @@ int main(int argc, char ** argv) {
 				1.0f * (float)(t + i),
 				vector2_scl(vector2_one(), 0.4f));
 		}
-		sdlex_end_frame(imageid);
+		sdlex_end_frame(imageid);*/
 		SDL_Log("%d", clock() - b);
 		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);
@@ -90,6 +87,7 @@ int main(int argc, char ** argv) {
 		SDL_UpdateWindowSurface(window);*/
 		SDL_Delay(SDL_max(16 - clock() + b, 0));
 	}
+	free(oneframe);
 
 LABEL_EXIT:
 	vkDeviceWaitIdle(get_vk_device());
@@ -101,5 +99,8 @@ LABEL_EXIT:
 	cleanup_vulkan();
 	// SDL_DestroyWindow(window);
 	cleanup_sdl();
+	if (extended_py_dispose() < 0) {
+		return 120;
+	}
 	return 0;
 }

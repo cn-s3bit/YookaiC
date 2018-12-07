@@ -337,6 +337,9 @@
     <ClInclude Include="Game\SDLEx\Scripting\PyExtend.h">
       <Filter>源文件\Game\SDLEx\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="Game\SDLEx\Scripting\RenderBindings.h">
+      <Filter>源文件\Game\SDLEx\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">
@@ -382,6 +385,9 @@
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Game\SDLEx\Scripting\PyExtend.c">
+      <Filter>源文件\Game\SDLEx\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SDLEx\Scripting\RenderBindings.c">
       <Filter>源文件\Game\SDLEx\Scripting</Filter>
     </ClCompile>
   </ItemGroup>

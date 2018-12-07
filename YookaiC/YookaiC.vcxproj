@@ -152,6 +152,7 @@
     <ClInclude Include="Game\SDLEx\MathEx\Vector2.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector3.h" />
     <ClInclude Include="Game\SDLEx\Scripting\PyExtend.h" />
+    <ClInclude Include="Game\SDLEx\Scripting\RenderBindings.h" />
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />
     <ClInclude Include="Game\SDLEx\Utils\ArrayList.h" />
     <ClInclude Include="Game\SDLEx\Utils\Deque.h" />
@@ -249,6 +250,7 @@
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c" />
     <ClCompile Include="Game\SDLEx\Scripting\PyExtend.c" />
+    <ClCompile Include="Game\SDLEx\Scripting\RenderBindings.c" />
     <ClCompile Include="Game\SDLEx\Utils\ArrayList.c" />
     <ClCompile Include="Game\SDLEx\Utils\Deque.c" />
     <ClCompile Include="Game\SDLEx\Utils\FileUtils.c" />
