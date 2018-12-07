@@ -328,6 +328,9 @@
     <ClInclude Include="Game\SDLEx\Utils\MemoryPool.h">
       <Filter>源文件\Game\SDLEx\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Game\SDLEx\LazyPython.h">
+      <Filter>源文件\Game\SDLEx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c">
@@ -387,6 +390,12 @@
       <Filter>Imported Libraries</Filter>
     </Library>
     <Library Include="..\..\VulkanSDK\1.1.82.1\Lib32\vulkan-1.lib">
+      <Filter>Imported Libraries</Filter>
+    </Library>
+    <Library Include="..\Py367\libs\python36.lib">
+      <Filter>Imported Libraries</Filter>
+    </Library>
+    <Library Include="..\Py367\libs\python3.lib">
       <Filter>Imported Libraries</Filter>
     </Library>
   </ItemGroup>

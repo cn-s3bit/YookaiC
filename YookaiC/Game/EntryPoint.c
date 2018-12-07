@@ -1,13 +1,16 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include "SDLEx/LazyPython.h"
 #include "SDLEx/SDLWithPlugins.h"
 #include "SDLEx/Utils/MathUtils.h"
+#include "SDLEx/Utils/FileUtils.h"
 #include "SDLEx/MathEx/MathEx.h"
 #include "Constants.h"
 #include "SDLEx/Vulkan/SDLExVulkan.h"
 
 #include "SDLEx/Utils/HashMap.h"
+
 
 CODEGEN_CUCKOO_HASHMAP(intintmap, int, int, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, memorypool_free_4bytes)
 
@@ -36,6 +39,50 @@ int handle_event(void) {
 int main(int argc, char ** argv) {
 	if (argc > 0)
 		SDL_Log("Working Path: %s\n", argv[0]);
+	wchar_t * program = Py_DecodeLocale(argv[0], NULL);
+	if (program == NULL) {
+		fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
+		exit(1);
+	}
+	Py_SetProgramName(program);  /* optional but recommended */
+	Py_Initialize();
+	size_t size;
+	const char * code =
+		"s = \"\"\"Gur Mra bs Clguba, ol Gvz Crgref\n"
+		"\n"
+		"Ornhgvshy vf orggre guna htyl.\n"
+		"Rkcyvpvg vf orggre guna vzcyvpvg.\n"
+		"Fvzcyr vf orggre guna pbzcyrk.\n"
+		"Pbzcyrk vf orggre guna pbzcyvpngrq.\n"
+		"Syng vf orggre guna arfgrq.\n"
+		"Fcnefr vf orggre guna qrafr.\n"
+		"Ernqnovyvgl pbhagf.\n"
+		"Fcrpvny pnfrf nera'g fcrpvny rabhtu gb oernx gur ehyrf.\n"
+		"Nygubhtu cenpgvpnyvgl orngf chevgl.\n"
+		"Reebef fubhyq arire cnff fvyragyl.\n"
+		"Hayrff rkcyvpvgyl fvyraprq.\n"
+		"Va gur snpr bs nzovthvgl, ershfr gur grzcgngvba gb thrff.\n"
+		"Gurer fubhyq or bar-- naq cersrenoyl bayl bar --boivbhf jnl gb qb vg.\n"
+		"Nygubhtu gung jnl znl abg or boivbhf ng svefg hayrff lbh'er Qhgpu.\n"
+		"Abj vf orggre guna arire.\n"
+		"Nygubhtu arire vf bsgra orggre guna *evtug* abj.\n"
+		"Vs gur vzcyrzragngvba vf uneq gb rkcynva, vg'f n onq vqrn.\n"
+		"Vs gur vzcyrzragngvba vf rnfl gb rkcynva, vg znl or n tbbq vqrn.\n"
+		"Anzrfcnprf ner bar ubaxvat terng vqrn -- yrg'f qb zber bs gubfr!\"\"\"\n"
+		"\n"
+		"d = {}\n"
+		"for c in (65, 97):\n"
+		"	for i in range(26):\n"
+		"		d[chr(i + c)] = chr((i + 13) % 26 + c)\n"
+		"\n"
+		"print(\"\".join([d.get(c, c) for c in s]))\n";
+	PyRun_SimpleString(code);
+	if (Py_FinalizeEx() < 0) {
+		exit(120);
+	}
+	PyMem_RawFree(program);
+	printf("Press Enter to Continue...");
+	getchar();
 	init_sdl();
 	SDL_Window * window = SDL_CreateWindow("Yookai 妖召", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_VULKAN);
 	/*SDL_Surface * surfaceForSoftwareRender = SDL_GetWindowSurface(window);
@@ -58,21 +105,6 @@ int main(int argc, char ** argv) {
 			goto LABEL_EXIT;
 		clock_t b = clock();
 		unsigned imageid = sdlex_begin_frame();
-		CuckooHashMap * map = create_intintmap();
-		for (int i = 0; i < 100000; i++) {
-			int r = rand();
-			int v = rand();
-			put_intintmap(map, r, v);
-			v = rand();
-			put_intintmap(map, r, v);
-			if (get_intintmap(map, r) != v)
-				printf("Error\n");
-			r = rand();
-			put_intintmap(map, r, v + 2);
-			if (remove_from_intintmap(map, r) != v + 2)
-				printf("Error\n");
-		}
-		destroy_cuckoo_hashmap(map);
 		for (int i = 0; i < SDL_max(200 - t / 3, 1); i++) {
 			SDL_Rect p1 = { 0, 0, 200, 400 };
 			p1.x += t + i;

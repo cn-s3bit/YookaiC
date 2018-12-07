@@ -63,3 +63,4 @@
 *.dll filter=lfs diff=lfs merge=lfs -text
 *.mp3 filter=lfs diff=lfs merge=lfs -text
 *.h linguist-language=c
+*.pyd filter=lfs diff=lfs merge=lfs -text

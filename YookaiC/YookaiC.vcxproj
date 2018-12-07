@@ -89,7 +89,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);SDLEX_VK_VALIDATION</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;D:\VulkanSDK\1.1.82.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;D:\VulkanSDK\1.1.82.1\Include;D:\YookaiC\Py367\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -119,7 +119,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;D:\VulkanSDK\1.1.82.1\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\YookaiC\YookaiC\VCSDL\include;D:\VulkanSDK\1.1.82.1\Include;D:\YookaiC\Py367\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Game\Constants.h" />
+    <ClInclude Include="Game\SDLEx\LazyPython.h" />
     <ClInclude Include="Game\SDLEx\MathEx\MathEx.h" />
     <ClInclude Include="Game\SDLEx\MathEx\MathExConsts.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector2.h" />
@@ -262,6 +263,8 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\VulkanSDK\1.1.82.1\Lib32\vulkan-1.lib" />
+    <Library Include="..\Py367\libs\python3.lib" />
+    <Library Include="..\Py367\libs\python36.lib" />
     <Library Include="VCSDL\lib\win32\SDL2.lib" />
     <Library Include="VCSDL\lib\win32\SDL2main.lib" />
     <Library Include="VCSDL\lib\win32\SDL2_image.lib" />
