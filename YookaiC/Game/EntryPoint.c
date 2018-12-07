@@ -87,9 +87,10 @@ int main(int argc, char ** argv) {
 		SDL_UpdateWindowSurface(window);*/
 		SDL_Delay(SDL_max(16 - clock() + b, 0));
 	}
-	free(oneframe);
 
 LABEL_EXIT:
+	free(oneframe);
+	dispose_texture2d(texture_id);
 	vkDeviceWaitIdle(get_vk_device());
 	TTF_CloseFont(testFont);
 	/*SDL_DestroyTexture(testTexture);

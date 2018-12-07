@@ -262,3 +262,11 @@ void bind_texture2d(unsigned imageIndex, int texture_id) {
 	bind_texture(imageIndex, get_texviewmap(texture_views, texture_id), get_texsamplermap(texture_samplers, texture_id), get_texinfomap(texture_infos, texture_id));
 	sdlex_render_init(get_vk_swap_chain(), get_vk_pipeline(), 0);
 }
+
+void dispose_texture2d(int texture_id) {
+	remove_from_texviewmap(texture_views, texture_id);
+	remove_from_texsamplermap(texture_samplers, texture_id);
+	remove_from_texinfomap(texture_infos, texture_id);
+	remove_from_teximagemap(texture_images, texture_id);
+	remove_from_texmemorymap(texture_memories, texture_id);
+}
