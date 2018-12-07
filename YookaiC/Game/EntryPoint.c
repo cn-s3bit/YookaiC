@@ -41,18 +41,11 @@ int main(int argc, char ** argv) {
 	SDL_setenv("PYTHONPATH", PYTHON_FOLDER "/DLLs;" PYTHON_FOLDER "/Lib", 1);
 	if (argc > 0)
 		SDL_Log("Working Path: %s\n", argv[0]);
-	wchar_t * program = Py_DecodeLocale(argv[0], NULL);
-	if (program == NULL) {
-		fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
-		exit(1);
-	}
-	Py_SetProgramName(program);  /* optional but recommended */
-	Py_Initialize();
+	extended_py_initialize(argv);
 	PyRun_SimpleString("import this");
-	if (Py_FinalizeEx() < 0) {
+	if (extended_py_dispose() < 0) {
 		exit(120);
 	}
-	PyMem_RawFree(program);
 	printf("Press Enter to Continue...");
 	getchar();
 	init_sdl();
