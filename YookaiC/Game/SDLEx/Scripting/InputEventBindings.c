@@ -17,7 +17,7 @@ static PyObject * _sdlex_binding_poll_event(PyObject * self, PyObject * args) {
 			case SDL_KEYUP:
 				return Py_BuildValue("ii", 2, sevent.key.keysym.sym);
 			case SDL_QUIT:
-				return Py_BuildValue("ii", 32767, Py_None);
+				return Py_BuildValue("iO", 32767, Py_None);
 			// TODO: More Types of Input
 		}
 	}
