@@ -2,6 +2,7 @@
 #include "../Utils/ArrayList.h"
 
 #include "RenderBindings.h"
+#include "InputEventBindings.h"
 
 static ArrayList * methods = NULL;
 static PyModuleDef module = {
@@ -20,6 +21,7 @@ void extend_py() {
 	methods = create_array_list(sizeof(PyMethodDef), 8);
 
 	extend_py_render_bindings(methods);
+	extend_py_input_event_bindings(methods);
 
 	PyMethodDef end_marker = {
 		NULL, NULL, 0, NULL
