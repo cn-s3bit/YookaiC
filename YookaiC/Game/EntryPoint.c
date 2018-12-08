@@ -102,5 +102,7 @@ LABEL_EXIT:
 	if (extended_py_dispose() < 0) {
 		return 120;
 	}
+	printf("Press Enter to Exit...");
+	getchar();
 	return 0;
 }
