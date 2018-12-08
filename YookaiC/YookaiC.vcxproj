@@ -151,6 +151,7 @@
     <ClInclude Include="Game\SDLEx\MathEx\MathExConsts.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector2.h" />
     <ClInclude Include="Game\SDLEx\MathEx\Vector3.h" />
+    <ClInclude Include="Game\SDLEx\Scripting\InputEventBindings.h" />
     <ClInclude Include="Game\SDLEx\Scripting\PyExtend.h" />
     <ClInclude Include="Game\SDLEx\Scripting\RenderBindings.h" />
     <ClInclude Include="Game\SDLEx\SDLWithPlugins.h" />
@@ -249,6 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\EntryPoint.c" />
+    <ClCompile Include="Game\SDLEx\Scripting\InputEventBindings.c" />
     <ClCompile Include="Game\SDLEx\Scripting\PyExtend.c" />
     <ClCompile Include="Game\SDLEx\Scripting\RenderBindings.c" />
     <ClCompile Include="Game\SDLEx\Utils\ArrayList.c" />

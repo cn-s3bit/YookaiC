@@ -26,7 +26,7 @@ void cleanup_sdl(void) {
 	SDL_Quit();
 }
 
-int handle_event(void) {
+short handle_event(void) {
 	SDL_Event e;
 	if (SDL_PollEvent(&e)) {
 		if (e.type == SDL_QUIT) {
@@ -53,20 +53,20 @@ int main(int argc, char ** argv) {
 
 	initialize_vulkan(window, VK_MAKE_VERSION(0, 1, 0));
 	create_graphics_pipeline_f(RESOURCE_FOLDER "Shaders/default.vert.spv", RESOURCE_FOLDER "Shaders/default.frag.spv");
-	int texture_id = load_texture2d(RESOURCE_FOLDER "Game/Image/Ming/Ming.png");
+	/*int texture_id = load_texture2d(RESOURCE_FOLDER "Game/Image/Ming/Ming.png");
 	for (unsigned m = 0; m < get_vk_swap_chain()->ImageCount; m++)
-		bind_texture2d(m, texture_id);
-	int t = 0;
+		bind_texture2d(m, texture_id);*/
 	unsigned size;
-	char * oneframe = read_file_to_char_array(RESOURCE_FOLDER "test_oneframe.py", &size);
+	char * code = read_file_to_char_array(RESOURCE_FOLDER "Scripts/main.py", &size);
+	PyRun_SimpleString((char *)code);
 	// Main Loop
-	while (1) {
+	/*while (1) {
 		t++;
 		if (handle_event() == EXIT_SIGNAL)
 			goto LABEL_EXIT;
 		clock_t b = clock();
 		PyRun_SimpleString(oneframe);
-		/*unsigned imageid = sdlex_begin_frame();
+		unsigned imageid = sdlex_begin_frame();
 		for (int i = 0; i < SDL_max(200 - t / 3, 1); i++) {
 			SDL_Rect p1 = { 0, 0, 200, 400 };
 			p1.x += t + i;
@@ -77,20 +77,19 @@ int main(int argc, char ** argv) {
 				1.0f * (float)(t + i),
 				vector2_scl(vector2_one(), 0.4f));
 		}
-		sdlex_end_frame(imageid);*/
+		sdlex_end_frame(imageid);
 		SDL_Log("%d", clock() - b);
 		/*SDL_SetRenderDrawColor(renderer, 83, 137, 211, 255);
 		SDL_RenderClear(renderer);
 		draw_texture(renderer, testTexture, new_sdl_point(250, 50));
 		draw_string(renderer, testFont, "新月村Test\n换行测试", new_sdl_point(100, 100));
 		SDL_RenderPresent(renderer);
-		SDL_UpdateWindowSurface(window);*/
+		SDL_UpdateWindowSurface(window);
 		SDL_Delay(SDL_max(16 - clock() + b, 0));
-	}
+	}*/
 
 LABEL_EXIT:
-	free(oneframe);
-	dispose_texture2d(texture_id);
+	free(code);
 	vkDeviceWaitIdle(get_vk_device());
 	TTF_CloseFont(testFont);
 	/*SDL_DestroyTexture(testTexture);
