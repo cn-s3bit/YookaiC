@@ -1,4 +1,4 @@
 """
 Yoogic: Logic Module of Yookai
 """
-from . import events
+from . import events, utils
