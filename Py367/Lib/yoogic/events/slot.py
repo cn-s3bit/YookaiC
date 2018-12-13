@@ -15,9 +15,9 @@ class Slot(object):
                 new_handlers.append((order, cur_handler))
         self.handlers = new_handlers
 
-    def signal(self, data=None):
+    async def signal(self, data=None):
         if self.order_dirty:
             self.handlers = sorted(self.handlers)
             self.order_dirty = False
         for _, handler in self.handlers:
-            handler(data)
+            await handler(data)
