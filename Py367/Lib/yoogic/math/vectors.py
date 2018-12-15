@@ -126,9 +126,7 @@ class Vector2(object):
             return 0.0
         c = self.x / m
         a = math.degrees(math.acos(c))
-        if self.y < 0:
-            return 360.0 - a
-        return a
+        return a if self.y >= 0 else 360.0 - a
 
     def angle_to(self, another):
         ex, ey = unpack_data(another)
