@@ -51,6 +51,14 @@ class Vector2(object):
     def __mul__(self, scalar):
         return Vector2(self.x * scalar, self.y * scalar)
 
+    def __itruediv__(self, scalar):
+        self.x /= scalar
+        self.y /= scalar
+        return self
+
+    def __truediv__(self, scalar):
+        return Vector2(self.x / scalar, self.y / scalar)
+
     def __add__(self, another):
         dx, dy = unpack_data(another)
         return Vector2(self.x + dx, self.y + dy)
