@@ -18,14 +18,14 @@ void sdlex_free_sampler(void * pt) {
 	free(pt);
 }
 
-CODEGEN_CUCKOO_HASHMAP(teximagemap, int, VkImage, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_image)
-CODEGEN_CUCKOO_HASHMAP(texmemorymap, int, VkDeviceMemory, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_memory)
-CODEGEN_CUCKOO_HASHMAP(texviewmap, int, VkImageView, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_imageview)
-CODEGEN_CUCKOO_HASHMAP(texsamplermap, int, VkSampler, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_sampler)
-CODEGEN_CUCKOO_HASHMAP(texinfomap, int, VkImageCreateInfo, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, free)
+CODEGEN_CUCKOO_HASHMAP(teximagemap, long, VkImage, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_image)
+CODEGEN_CUCKOO_HASHMAP(texmemorymap, long, VkDeviceMemory, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_memory)
+CODEGEN_CUCKOO_HASHMAP(texviewmap, long, VkImageView, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_imageview)
+CODEGEN_CUCKOO_HASHMAP(texsamplermap, long, VkSampler, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, sdlex_free_sampler)
+CODEGEN_CUCKOO_HASHMAP(texinfomap, long, VkImageCreateInfo, sdlex_hash_int, sdlex_equal_int, memorypool_free_4bytes, free)
 
 CuckooHashMap * texture_images, * texture_memories, * texture_views, * texture_samplers, * texture_infos;
-int next_image_id = 0;
+long next_image_id = 0;
 
 SDL_Rect texture_frame(SDL_Texture * texture) {
 	SDL_Rect result = { .x = 0,.y = 0 };
@@ -204,7 +204,7 @@ void copy_buffer_to_image(VkBuffer buffer, VkImage image, unsigned width, unsign
 	end_single_time_commands(commandBuffer);
 }
 
-int load_texture2d(const char * filename) {
+long load_texture2d(const char * filename) {
 	if (!texture_images) {
 		// Initialize
 		texture_images = create_teximagemap();
@@ -253,7 +253,7 @@ int load_texture2d(const char * filename) {
 	return next_image_id;
 }
 
-void bind_texture2d(unsigned imageIndex, int texture_id) {
+void bind_texture2d(unsigned imageIndex, long texture_id) {
 	if (texture_id < 0 || texture_id > next_image_id) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Invalid texture_id: %d", texture_id);
 		return;
@@ -263,7 +263,7 @@ void bind_texture2d(unsigned imageIndex, int texture_id) {
 	sdlex_render_init(get_vk_swap_chain(), get_vk_pipeline(), 0);
 }
 
-void dispose_texture2d(int texture_id) {
+void dispose_texture2d(long texture_id) {
 	remove_from_texviewmap(texture_views, texture_id);
 	remove_from_texsamplermap(texture_samplers, texture_id);
 	remove_from_texinfomap(texture_infos, texture_id);
