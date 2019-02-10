@@ -85,7 +85,9 @@ void sdlex_render_init(SDLExVulkanSwapChain * swapchain, SDLExVulkanGraphicsPipe
 void sdlex_render_flush(unsigned imageIndex);
 void sdlex_render_texture(unsigned imageIndex, SDL_Rect target);
 void sdlex_render_texture_ex(unsigned imageIndex, Vector2 position, Vector2 origin, float rotation, Vector2 scale);
+void sdlex_render_texture_region_ex(unsigned imageIndex, Vector2 position, Vector2 origin, float rotation, Vector2 scale, SDL_Rect sourceRegion);
 void sdlex_end_frame(unsigned imageIndex);
+
 
 inline VkVertexInputBindingDescription _sdlex_get_binding_description(void) {
 	VkVertexInputBindingDescription bindingDescription;
